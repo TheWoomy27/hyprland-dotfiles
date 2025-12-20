@@ -1,376 +1,16 @@
-// // {
-// //     "layer": "top",
-// //     "width": 1850,
-// //     "margin-top": 10,
-// //     "margin-bottom": 0,
-// //     "modules-left": [
-// //         "cpu",
-// //         "cava"
-// //     ],
-// //     "modules-center": [
-// //         "hyprland/workspaces",
-// //         "sway/window"
-// //     ],
-// //     "modules-right": [
-// //         "network",
-// //         "pulseaudio",
-// //         "battery",
-// //         "clock"
-// //     ],
-// //     "sway/window": {
-// //         "max-length": 50
-// //     },
-// //     "battery": {
-// //         "format": "{capacity}% {icon}",
-// //         "format-icons": [
-// //             "",
-// //             "",
-// //             "",
-// //             "",
-// //             ""
-// //         ]
-// //     },
-// //     "cpu": {
-// //         "interval": 3,
-// //         "format": "{}% ",
-// //         "max-length": 10,
-// //         "on-click": "exec btop"
-// //     },
-// //     "cava": {
-// //         // "cava_config": "$XDG_CONFIG_HOME/cava/cava.conf",
-// //         "framerate": 30,
-// //         "autosens": 1,
-// //         "sensitivity": 100,
-// //         "bars": 14,
-// //         "lower_cutoff_freq": 50,
-// //         "higher_cutoff_freq": 10000,
-// //         "hide_on_silence": false,
-// //         // "format_silent": "quiet",
-// //         "method": "pulse",
-// //         "source": "auto",
-// //         "stereo": true,
-// //         "reverse": false,
-// //         "bar_delimiter": 0,
-// //         "monstercat": false,
-// //         "waves": false,
-// //         "noise_reduction": 0.77,
-// //         "input_delay": 2,
-// //         "format-icons": ["▁", "▂", "▃", "▄", "▅", "▆", "▇", "█" ],
-// //         "actions": {
-// //                    "on-click-right": "mode"
-// //                    }
-// //     },
-// //     "clock": {
-// //         "format-alt": "{:%a, %d. %b  %H:%M}"
-// //     },
-// //     "pulseaudio": {
-// //         "format": "{volume}% {icon}",
-// //         "format-bluetooth": "{volume}% {icon}",
-// //         "format-muted": "",
-// //         "format-icons": {
-// //             "alsa_output.pci-0000_00_1f.3.analog-stereo": "",
-// //             "alsa_output.pci-0000_00_1f.3.analog-stereo-muted": "",
-// //             "headphone": "",
-// //             "hands-free": "",
-// //             "headset": "",
-// //             "phone": "",
-// //             "phone-muted": "",
-// //             "portable": "",
-// //             "car": "",
-// //             "default": [
-// //                 "",
-// //                 ""
-// //             ]
-// //         },
-// //         "scroll-step": 1,
-// //         "on-click": "pavucontrol",
-// //         "ignored-sinks": [
-// //             "Easy Effects Sink"
-// //         ]
-// //     },
-// //     "network": {
-// //         "interface": "wlp0s20f3",
-// //         "format": "{ifname}",
-// //         "format-wifi": "{essid} ({signalStrength}%) ",
-// //         "format-ethernet": "{ipaddr}/{cidr} 󰊗",
-// //         "format-disconnected": "", //An empty format will hide the module.
-// //         "tooltip-format": "{ifname} via {gwaddr} 󰊗",
-// //         "tooltip-format-wifi": "{essid} ({signalStrength}%) ",
-// //         "tooltip-format-ethernet": "{ifname} ",
-// //         "tooltip-format-disconnected": "Disconnected",
-// //         "max-length": 50
-// //     },
-// //     "hyprland/workspaces": {
-// //         "format": "{icon}",
-// //         "on-click": "activate",
-// //         "format-icons": {
-// //             "1": "",
-// //             "2": "",
-// //             "3": "",
-// //             "4": "",
-// //             "5": "",
-// //             "urgent": "",
-// //             "active": "",
-// //             "default": ""
-// //         },
-// //         "sort-by-number": true
-// //     }
-// // }
-// [
-// // --- Bar Definition for the Main Monitor ---
-// {
-//     "layer": "overlay",
-//     "position": "top", // Keep this if you want it at the bottom of the screen
-//     "exclusive": true,
-//     "output": "eDP-1", // Specify output explicitly for multi-monitor setup
-//     "height": 20,
-//     "spacing": 8,
-//     "mode": "dock", // Request an exclusive zone from the compositor [1, 2]
-//     "name": "main-bar", // Allows specific CSS styling [3]
-//     "modules-left": [
-//         "hyprland/window",
-//         //"hyprland/submap",
-//         "group/central-media" // Grouping media modules [4]
-//     ],
-//     "modules-center": [
-//         "hyprland/workspaces"
-//     ],
-//     "modules-right": [
-//         "custom/updates",
-//         "custom/weather",
-//         "custom/dunst",
-//         "group/system-status", // Grouping system health modules [4]
-//         "tray", // Adding system tray icons [5]
-//         "clock"
-//     ],
-//     // --- Hyprland Workspaces Configuration (Advanced) ---
-//     "hyprland/workspaces": {
-//         "format": "{windows}",
-//         "format-window-separator": "",
-//         "show-special": true, // Display special workspaces [6]
-//         "sort-by": "number", // Sort numerically [7]
-//         "move-to-monitor": false, // Use focusworkspaceoncurrentmonitor dispatcher [8]
-//         "on-scroll-up": "hyprctl dispatch workspace e-1", // Scroll actions defined [9, 10]
-//         "on-scroll-down": "hyprctl dispatch workspace e+1",
-//         "persistent-workspaces": {
-//             "*": 4, // 4 workspaces persistent on all monitors [11]
-//             "DP-2": 6 // 6 workspaces persistent on secondary monitor
-//         },
-//         "format-icons": {
-//             "1": "",
-//             "2": "",
-//             "3": "",
-//             "active": "",
-//             "urgent": "", // Icon for urgent workspace [12]
-//             "default": ""
-//         },
-//         "window-rewrite-default": "",
-//         "workspace-taskbar": { // Enabling taskbar style for workspaces [13]
-//             "enable": true,
-//             "update-active-window": true,
-//             "format": "{icon}",
-//             "icon-size": 18,
-//             "on-click-window": "hyprctl dispatch focuswindow address:{address}" // Click action on window item [14]
-//         },
-//         "window-rewrite": { // Complex rewriting rules combining class and title [7]
-//             "title<.*youtube.*>": "",
-//             "class<firefox> title<.*github.*>": "",
-//             "kitty": "",
-//             "code": "󰨞"
-//         }
-//     },
-//     // --- Hyprland Other Modules ---
-//     "hyprland/window": {
-//         "format": "",
-//         "max-length": 50,
-//         "separate-outputs": true, // Show window title for the monitor the bar is on [15]
-//         "icon": true // Show application icon [15]
-//     },
-//     "hyprland/submap": {
-//         "format": "Mode: {}",
-//         "always-on": true, // Display even when there is no active submap [16]
-//         "default-submap": "Global"
-//     },
-//     // --- Module Groups for Organization ---
-//     "group/system-status": {
-//         "orientation": "vertical", // Stack modules vertically [17]
-//         "drawer": { // Enable hover-to-reveal drawer functionality [4]
-//             "transition-duration": 300,
-//             "children-class": "drawer-sysinfo"
-//         },
-//         "modules": [
-//             "cpu",
-//             "memory",
-//             "disk",
-//             "temperature"
-//         ]
-//     },
-//     "group/central-media": {
-//         "orientation": "horizontal",
-//         "modules": [
-//             "mpris",
-//             "cava" // Audio visualizer
-//         ]
-//     },
-//     // --- Core System Modules (Highly Configured) ---
-//     "cpu": {
-//         "format": "CPU: {usage}% ",
-//         "interval": 2,
-//         "on-click": "alacritty -e htop" // Example click command [18]
-//     },
-//     "memory": {
-//         "format": "RAM: {percentage}% 󰍛",
-//         "interval": 5,
-//         "states": { // Custom states for styling [19]
-//             "warning": 80,
-//             "critical": 95
-//         }
-//     },
-//     "disk": {
-//         "path": "/", // Monitoring root partition [20]
-//         "format": "Disk: {percentage_used}% ",
-//         "tooltip-format": "{used} used out of {total} on {path} ({percentage_used}%)" // Detailed tooltip [20]
-//     },
-//     "temperature": {
-//         "format": "Temp: {temperatureC}°C ",
-//         "critical-threshold": 85, // Set critical threshold for styling [21]
-//         "thermal-zone": 0
-//     },
-//     // --- Media and Sound ---
-//     "wireplumber": {
-//         "node-type": "Audio/Sink",
-//         "format": "Vol: {volume}% {icon}",
-//         "format-muted": "",
-//         "format-icons": ["", "", ""],
-//         "max-volume": 150.0, // Allowing volume above 100% [22]
-//         "on-scroll-up": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%+",
-//         "on-scroll-down": "wpctl set-volume @DEFAULT_AUDIO_SINK@ 5%-"
-//     },
-//     "cava": {
-//         "cava_config": "~/.config/cava/config",
-//         "bars": 10,
-//         "framerate": 60,
-//         "hide_on_silence": true, // Hide when no input [23]
-//         "format-icons": [" ", "▂", "▃", "▄", "▅", "▆", "▇", "█"] // Custom ASCII icons [24]
-//     },
-//     "mpris": {
-//         "player": "playerctld", // Follow active player [25]
-//         "format": "{status_icon} {title}",
-//         "format-paused": "{status_icon} ⏸ {title}",
-//         "title-len": 30,
-//         "on-click": "playerctl play-pause",
-//         "on-scroll-up": "playerctl next",
-//         "on-scroll-down": "playerctl previous",
-//         "status-icons": {
-//             "Playing": "",
-//             "Paused": ""
-//         }
-//     },
-//     // --- Power and Connectivity ---
-//     "battery": {
-//         "format": "{capacity}% {icon}",
-//         "format-charging": "⚡ {capacity}%",
-//         "format-icons": ["", "", "", "", ""],
-//         "states": { // Enable warning/critical states for styling [26]
-//             "warning": 30,
-//             "critical": 15
-//         },
-//         "on-click-right": "powerprofilesctl set performance" // Example action
-//     },
-//     "power-profiles-daemon": {
-//         "format": "{icon}",
-//         "tooltip-format": "Power: {profile}",
-//         "format-icons": {
-//             "performance": "",
-//             "balanced": "",
-//             "power-saver": ""
-//         }
-//     },
-//     "network": {
-//         "format-wifi": " {essid} ({signalStrength}%)", // Detailed format [27]
-//         "format-ethernet": "󰊗 {ipaddr}",
-//         "format-disconnected": "Disconnected "
-//     },
-//     "clock": {
-//         "format": " {:%a %d %b}", // Date format
-//         "format-alt": "{:%a %d %b %I:%M %p}", // Time format on toggle
-//         "tooltip-format": "{calendar}\n{tz_list}", // Full calendar and timezones in tooltip [28]
-//         "timezones": [ // Multiple timezones for global visibility [28]
-//             "America/New_York",
-//             "Europe/London"
-//         ],
-//         "calendar": {
-//             "mode": "month",
-//             "weeks-pos": "right"
-//         },
-//         "actions": { // Complex clock actions [29]
-//             "on-click-right": "mode",
-//             "on-scroll-up": "shift_up",
-//             "on-scroll-down": "shift_down"
-//         }
-//     },
-//     "tray": {
-//         "icon-size": 20,
-//         "spacing": 10,
-//         "reverse-direction": true // Reverse order of icons [30]
-//     },
-//     // --- Custom Modules (Require External Scripts) ---
-//     "custom/updates": { // Example using script for Pacman/AUR updates [31]
-//         "format": "Updates: {} ",
-//         "interval": 3600,
-//         "exec": "check-updates | wc -l",
-//         "on-click": "alacritty -e 'sudo pacman -Syu'; pkill -SIGRTMIN+8 waybar", // Execute update and signal waybar to reload [31]
-//         "signal": 8
-//     },
-//     "custom/weather": { // Example using script for weather display [32]
-//         "format": "{} 🌤️",
-//         "interval": 3600,
-//         "exec": "~/.config/waybar/scripts/get_weather.sh Berlin+Germany",
-//         "return-type": "json"
-//     },
-//     "custom/dunst": { // Example for notification status [33]
-//         "format": "{}",
-//         "exec": "~/.config/waybar/scripts/dunst.sh",
-//         "on-click": "dunstctl set-paused toggle"
-//     },
-//     "idle_inhibitor": {
-//         "format": "{icon}",
-//         "format-icons": {
-//             "activated": "",
-//             "deactivated": ""
-//         },
-//         "on-click": "waybar-config-editor -t idle_inhibitor"
-//     },
-//     "systemd-failed-units": {
-//         "format": "✗ {nr_failed}",
-//         "format-ok": "✓",
-//         "system": true, // Monitor system-wide units [34]
-//         "hide-on-ok": false // Always display status
-//     }
-// }
-// ]
 {
-  "layer": "top", // Waybar at top layer
-  "position": "top", // Waybar position (top|bottom|left|right)
-  "height": 16, // Waybar height (to be removed for auto height)
-  // "width": 1280, // Waybar width
-  "spacing": 8, // Gaps between modules (4px)
+  "layer": "top",
+  "position": "top",
+  "height": 16,
+  "spacing": 8,
   "margin-top": 8,
   "margin-left": 20,
   "margin-right": 20,
   "margin-bottom": -12,
   "mode": "dock",
   "reload_style_on_change": true,
-  //   "include": [
-  //     "~/.config/waybar/modules.json",
-  //     "~/.config/waybar/quicklinks.json",
-  //     "~/.config/waybar/hardware.json",
-  //     "~/.config/waybar/media.json",
-  //     "~/.config/waybar/media.json"
-  //   ],
   "modules-left": [
     "custom/icon",
-    //"group/quicklinks",
     //"tray",
     //"hyprland/window",
     "custom/cava",
@@ -378,7 +18,6 @@
   "modules-center": ["hyprland/workspaces"],
   "modules-right": [
     "network",
-    // "mpd",
     "group/media",
     "group/hardware",
     "clock",
@@ -423,7 +62,7 @@
       "phone": "",
       "portable": "",
       "car": "",
-      "default": [" ", " ", " "],
+      "default": [" ", " ", " "],
     },
     "scroll-step": 5,
     "on-click-right": "pavucontrol",
@@ -458,7 +97,6 @@
     },
   },
 
-  // Hyprland Window
   "hyprland/window": {
     "rewrite": {
       "(.*) - Zen Browser": "$1",
@@ -471,7 +109,7 @@
     "separate-outputs": true,
   },
   "custom/icon": {
-    "format": "\uf30a", // \uf30a is the JSON escape for the character
+    "format": "\uf30a",
     "tooltip": false,
     "on-click": "wofi --show drun --allow-images --prompt ''",
   },
@@ -485,7 +123,6 @@
 
   "custom/notification": {
     "tooltip": false,
-    // "format": "{} {icon}",
     "format": "{icon}",
     "format-icons": {
       "notification": "󱅫",
@@ -542,7 +179,6 @@
     "on-click": "nm-connection-editor",
   },
 
-  // Battery
   "battery": {
     "states": {
       // "good": 95,
@@ -553,12 +189,10 @@
     "format-charging": "  {capacity}%",
     "format-plugged": "  {capacity}%",
     "format-alt": "{icon}  {time}",
-    // "format-good": "", // An empty format will hide the module
-    // "format-full": "",
+
     "format-icons": [" ", " ", " ", " ", " "],
   },
 
-  // Bluetooth
   "bluetooth": {
     "format-disabled": "",
     "format-off": "",
@@ -567,21 +201,8 @@
     "format-no-controller": "",
   },
 
-  // Other
   "user": {
     "format": "{user}",
-    "interval": 60,
     "icon": false,
-  },
-
-  // Idle Inhibator
-  "idle_inhibitor": {
-    "format": "{icon}",
-    "tooltip": true,
-    "format-icons": {
-      "activated": "",
-      "deactivated": "",
-    },
-    "on-click-right": "hyprlock",
   },
 }
