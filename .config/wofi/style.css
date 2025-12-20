@@ -1,0 +1,60 @@
+/* MOONLIGHT WOFI THEME */
+
+* {
+    font-family: monospace; /* Change to your preferred font */
+}
+
+window {
+    background-color: #222436; /* theme_bg_color */
+    color: #c8d3f5;            /* theme_fg_color */
+    border: 2px solid #7cafff; /* focusBorder */
+    border-radius: 10px;
+}
+
+#input {
+    background-color: #191a2a; /* theme_base_color */
+    color: #c8d3f5;
+    border: 2px solid #191a2a;
+    border-radius: 5px;
+    margin: 10px;
+    padding: 10px;
+}
+
+#input:focus {
+    border: 2px solid #7cafff; /* focusBorder */
+}
+
+#inner-box {
+    background-color: #222436;
+    margin: 10px;
+}
+
+#outer-box {
+    margin: 5px;
+    background-color: #222436;
+}
+
+#scroll {
+    margin: 5px;
+    background-color: #222436;
+}
+
+#text {
+    color: #c8d3f5;
+    margin: 5px;
+}
+
+#entry:selected {
+    background-color: #7cafff; /* focusBorder */
+    border-radius: 5px;
+}
+
+#text:selected {
+    color: #191a2a; /* contrast color for text on blue */
+}
+
+#expander {
+    display: none;
+    margin-right: 5px;
+    width: 20px;
+}

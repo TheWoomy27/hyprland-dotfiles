@@ -1,0 +1,15 @@
+cursor_trail 1
+cursor_shape beam
+tab_bar_edge top
+background #222436
+color3  #cecb00
+color11 #fffd00
+allow_hyperlinks yes
+notify_on_cmd_finish invisible
+
+map ctrl+w close_tab
+map ctrl+shift+t detach_tab
+map ctrl+shift+tab previous_tab
+map ctrl+tab next_tab
+map ctrl+t new_tab
+
