@@ -1,27 +1,30 @@
-/* MOONLIGHT WOFI THEME */
-
 * {
-    font-family: monospace; /* Change to your preferred font */
+    font-family: "Hack Nerd Font"; 
 }
 
 window {
-    background-color: #222436; /* theme_bg_color */
-    color: #c8d3f5;            /* theme_fg_color */
-    border: 2px solid #7cafff; /* focusBorder */
-    border-radius: 10px;
+    border: 25px solid transparent;
+    border-radius: 25px;
+    color: #7cafff;
+    background-image:
+        linear-gradient(#11111b, #11111b),
+        linear-gradient(90deg, #7cafff, #3b63cf);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
 }
 
 #input {
-    background-color: #191a2a; /* theme_base_color */
+    background-color: #191a2a;
     color: #c8d3f5;
     border: 2px solid #191a2a;
     border-radius: 5px;
     margin: 10px;
     padding: 10px;
+
 }
 
 #input:focus {
-    border: 2px solid #7cafff; /* focusBorder */
+    border: 2px solid #7cafff; 
 }
 
 #inner-box {
@@ -32,11 +35,13 @@ window {
 #outer-box {
     margin: 5px;
     background-color: #222436;
+    border-radius: 20px;
 }
 
 #scroll {
     margin: 5px;
     background-color: #222436;
+    border-radius: 25px;
 }
 
 #text {
@@ -45,12 +50,12 @@ window {
 }
 
 #entry:selected {
-    background-color: #7cafff; /* focusBorder */
+    background-color: #7cafff; 
     border-radius: 5px;
 }
 
 #text:selected {
-    color: #191a2a; /* contrast color for text on blue */
+    color: #191a2a; 
 }
 
 #expander {

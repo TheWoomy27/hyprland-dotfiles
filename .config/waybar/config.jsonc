@@ -11,6 +11,7 @@
   "reload_style_on_change": true,
   "modules-left": [
     "custom/icon",
+    "group/hardware",
     //"tray",
     //"hyprland/window",
     "custom/cava",
@@ -19,7 +20,6 @@
   "modules-right": [
     "network",
     "group/media",
-    "group/hardware",
     "clock",
     "custom/notification",
     "custom/exit",
