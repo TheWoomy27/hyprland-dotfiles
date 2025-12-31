@@ -54,6 +54,11 @@ window {
     border-radius: 5px;
 }
 
+#entry:hover {
+    background-color: #2F334D; 
+    border-radius: 5px;
+}
+
 #text:selected {
     color: #191a2a; 
 }

@@ -1,0 +1,231 @@
+{
+  "$schema": "/etc/xdg/swaync/configSchema.json",
+  "positionX": "right",
+  "positionY": "top",
+  "control-center-margin-top": 20,
+  "control-center-margin-bottom": 10,
+  "control-center-margin-right": 10,
+  "control-center-margin-left": 10,
+  "notification-icon-size": 64,
+  "notification-body-image-height": 100,
+  "notification-body-image-width": 200,
+  "timeout": 10,
+  "timeout-low": 5,
+  "timeout-critical": 0,
+  "fit-to-screen": false,
+  "control-center-width": 430,
+  "control-center-height": 1130,
+  "notification-window-width": 500,
+  "keyboard-shortcuts": true,
+  "image-visibility": "when-available",
+  "transition-time": 200,
+  "hide-on-clear": false,
+  "hide-on-action": true,
+  "script-fail-notify": true,
+  "widgets": [
+    "menubar#top",
+    "volume",
+    "backlight",
+    "menubar#row-one",
+    "menubar#row-two",
+    "menubar#row-three",
+    "menubar#row-four",
+    "mpris",
+    "notifications"
+  ],
+  "widget-config": {
+    "menubar#top": {
+      "menu#powermode-buttons": {
+        "label": "    ",
+        "position": "left",
+        "actions": [
+          {
+            "label": "Performance",
+            "command": "powerprofilesctl set performance"
+          },
+          {
+            "label": "Balanced",
+            "command": "powerprofilesctl set balanced"
+          },
+          {
+            "label": "Power-saver",
+            "command": "powerprofilesctl set power-saver"
+          }
+        ]
+      },
+      "menu#power-buttons": {
+        "label": "",
+        "position": "right",
+        "actions": [
+          {
+            "label": " Reboot",
+            "command": "systemctl reboot"
+          },
+          {
+            "label": " Lock",
+            "command": "hyprlock"
+          },
+          {
+            "label": " Logout",
+            "command": "swaymsg exit"
+          },
+          {
+            "label": " Shut down",
+            "command": "systemctl poweroff"
+          }
+        ]
+      },
+      "buttons#topbar-buttons": {
+        "position": "right",
+        "actions": [
+          {
+            "label": "",
+            "command": "settings app command here"
+          },
+          {
+            "label": "",
+            "command": "hyprlock"
+          }
+        ]
+      }
+    },
+    "volume": {
+      "label": " "
+    },
+    "backlight": {
+      "label": "󰃞 "
+    },
+    "menubar#row-one": {
+      "buttons#wifi": {
+        "position": "left",
+        "actions": [
+          {
+            "label": "  Wi-Fi",
+            "command": "",
+            "type": "toggle",
+            "active": true
+          }
+        ]
+      },
+      "buttons#wifi-selector": {
+        "position": "left",
+        "actions": [
+          {
+            "label": "󰥭",
+            "command": ""
+          }
+        ]
+      },
+      "buttons#bluetooth-selector": {
+        "position": "right",
+        "actions": [
+          {
+            "label": "󰥭",
+            "command": ""
+          }
+        ]
+      },
+      "buttons#bluetooth": {
+        "position": "right",
+        "actions": [
+          {
+            "label": " Bluetooth",
+            "command": "",
+            "type": "toggle",
+            "active": true
+          }
+        ]
+      }
+    },
+    "menubar#row-two": {
+      "buttons#power-mode": {
+        "position": "left",
+        "actions": [
+          {
+            "label": " Power Mode",
+            "command": "",
+            "type": "toggle"
+          }
+        ]
+      },
+      "menu#power-mode-selector": {
+        "label": "󰥭",
+        "position": "left",
+        "actions": [
+          {
+            "label": "Performance",
+            "command": "powerprofilesctl set performance"
+          },
+          {
+            "label": "Balanced",
+            "command": "powerprofilesctl set balanced"
+          },
+          {
+            "label": "Power-saver",
+            "command": "powerprofilesctl set power-saver"
+          }
+        ]
+      },
+      "buttons#night-light": {
+        "position": "right",
+        "actions": [
+          {
+            "label": " Night Light",
+            "command": "./home/austin/.config/swaync/scripts/toggle_hyprsunset.sh",
+            "type": "toggle",
+            "active": false
+          }
+        ]
+      }
+    },
+    "menubar#row-three": {
+      "buttons#dnd": {
+        "position": "left",
+        "actions": [
+          {
+            "label": "  Do Not Disturb",
+            "command": "",
+            "type": "toggle",
+            "active": true
+          }
+        ]
+      },
+      "buttons#airplane-mode": {
+        "position": "right",
+        "actions": [
+          {
+            "label": "󰀝 Airplane Mode",
+            "command": "",
+            "type": "toggle"
+          }
+        ]
+      }
+    },
+    "menubar#row-four": {
+      "buttons#caffeine": {
+        "position": "left",
+        "actions": [
+          {
+            "label": "  Caffeine",
+            "command": "",
+            "type": "toggle"
+          }
+        ]
+      },
+      "buttons#other2": {
+        "position": "right",
+        "actions": [
+          {
+            "label": "idk yet",
+            "command": "",
+            "type": "toggle"
+          }
+        ]
+      }
+    },
+    "mpris": {
+      "image-size": 96,
+      "image-radius": 12
+    }
+  }
+}

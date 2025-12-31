@@ -14,13 +14,14 @@
     "group/hardware",
     //"tray",
     //"hyprland/window",
+    "network",
     "custom/cava",
   ],
   "modules-center": ["hyprland/workspaces"],
   "modules-right": [
-    "network",
     "group/media",
     "clock",
+    "battery",
     "custom/notification",
     "custom/exit",
   ],
@@ -109,15 +110,15 @@
     "separate-outputs": true,
   },
   "custom/icon": {
-    "format": "\uf30a",
+    "format": "", //"\uf30a",
     "tooltip": false,
-    "on-click": "wofi --show drun --allow-images --prompt ''",
+    "on-click": "wofi",
   },
   // Power Menu
   "custom/exit": {
     "format": "",
     "tooltip-format": "Powermenu",
-    "on-click": "wlogout -b 4",
+    "on-click": "wlogout",
     "tooltip": false,
   },
 
@@ -167,7 +168,7 @@
   // Network
   "network": {
     "format": "{ifname}",
-    "format-wifi": "  {signalStrength}%  {bandwidthDownBytes}  {bandwidthUpBytes} ",
+    "format-wifi": "  {signalStrength}%", //  {bandwidthDownBytes}  {bandwidthUpBytes} ",
     "format-ethernet": "   {bandwidthDownBytes}  {bandwidthUpBytes} ",
     "format-disconnected": "󰲛 ",
     "tooltip-format": "  {ifname} via {gwaddri}",
@@ -185,9 +186,9 @@
       "warning": 30,
       "critical": 15,
     },
-    "format": "{icon}   {capacity}%",
-    "format-charging": "  {capacity}%",
-    "format-plugged": "  {capacity}%",
+    "format": "{icon}{capacity}%",
+    "format-charging": " {capacity}%",
+    "format-plugged": " {capacity}%",
     "format-alt": "{icon}  {time}",
 
     "format-icons": [" ", " ", " ", " ", " "],

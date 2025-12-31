@@ -1,0 +1,182 @@
+* {
+    font-family: "Hack Nerd Font", sans-serif;
+    transition: 100ms all;
+    outline: none;
+    font-weight: bold;
+}
+
+.control-center {
+    background-clip: padding-box;
+    padding: 20px;
+    background: linear-gradient(#222436, #222436) padding-box,
+              linear-gradient(to right, #7cafff, #3B63CF) border-box;
+    border-radius: 20px;
+    border: 4px solid transparent;
+}
+
+.widget-buttons-grid,
+.widget-top-row,
+.widget-volume,
+.widget-backlight {
+    background: transparent;
+}
+
+.widget-volume, 
+.widget-backlight {
+    color: #7cafff;
+    margin: -5px;
+    margin-left: 0px;
+    margin-right: -10px;
+}
+.widget-volume highlight, 
+.widget-backlight highlight {
+    min-height: 4px;
+    background: linear-gradient(to right, #3B63CF, #7cafff);
+    border: 0px solid transparent
+}
+.widget-volume trough, 
+.widget-backlight trough {
+    background-color: #1E2030; 
+}
+.widget-volume slider, 
+.widget-backlight slider {
+    background-image: none;
+    background-color: #7cafff; 
+    border: 0px solid transparent;
+}
+.widget-volume slider:hover, 
+.widget-backlight slider:hover {
+    background-image: none;
+    background-color: #B4C2F0; 
+    transition: 200ms all;
+}
+
+.widget-menubar button {
+    color: #7cafff;
+    padding: 6px 13px;
+    padding-left: 9px;
+    margin: 4px;
+    background: linear-gradient(#1E2030, #1E2030) padding-box, linear-gradient(to right, #7cafff, #3B63CF) border-box;
+    border-radius: 999px;
+    border: 2px solid transparent;
+    font-size: 18px;
+}
+.widget-menubar button:hover {
+    background: linear-gradient(#2F334D, #2F334D) padding-box, linear-gradient(to right, #7cafff, #3B63CF) border-box;
+}
+
+.row-one button,
+.row-two button,
+.row-three button,  
+.row-four button {
+    border-radius: 20px;
+    font-size: 15px;
+    margin-bottom: 8px;
+    padding: 15px 0px;
+    min-width: 175px;
+}
+.row-one button.toggle:checked,
+.row-two button.toggle:checked,
+.row-three button.toggle:checked,  
+.row-four button.toggle:checked {
+    color: #1E2030;
+    background: linear-gradient(#7cafff, #7cafff) padding-box, linear-gradient(to right, #3B63CF, #3B63CF) border-box;
+}
+
+.row-one button.toggle:checked:hover,
+.row-two button.toggle:checked:hover,
+.row-three button.toggle:checked:hover,  
+.row-four button.toggle:checked:hover {
+    background: linear-gradient(#90bbff, #90bbff) padding-box, linear-gradient(to right, #3B63CF, #3B63CF) border-box;
+} 
+    
+/* Buttons with selectors */
+.wifi button,
+.bluetooth button,
+.power-mode button {
+    min-width: 130px;
+    border-radius: 20px;
+    border-bottom-right-radius: 5px;
+    border-top-right-radius: 5px;
+}
+
+.wifi label {
+    margin-left: -30px;
+}
+.bluetooth label {
+    margin-left: -10px;
+}
+.power-mode label {
+    margin-left: 0px;
+}
+.night-light label {
+    margin-left: -30px;
+}
+.dnd label {
+    margin-left: 0px;
+}
+.airplane-mode label {
+    margin-left: -10px;
+}
+.caffeine label {
+    margin-left: -50px;
+}
+.other2 label {
+    margin-left: -80px;
+}
+
+/* All selectors */
+.wifi-selector button,
+.bluetooth-selector button,
+.power-mode-selector button,
+.row-two > box > .menu-button-bar > button {
+    color: #7cafff;
+    border-radius: 20px;
+    min-width: 35px;
+    margin-left: 0px;
+    margin-right: 6px;
+    border-top-left-radius: 5px;
+    border-bottom-left-radius: 5px;
+    /* background: transparent; */
+    background: linear-gradient(#1E2030, #1E2030) padding-box, linear-gradient(to right, #4872D7, #3B63CF) border-box;
+}
+.wifi-selector button:hover,
+.bluetooth-selector button:hover, 
+.row-two > box > .menu-button-bar > button:hover {
+    background: linear-gradient(#2F334D, #2F334D) padding-box, linear-gradient(to right, #4872D7, #3B63CF) border-box;
+}
+
+.power-mode-selector button {
+    color: #7cafff;
+    padding: 6px 13px;
+    padding-left: 9px;
+    margin: 4px;
+    margin-top: -8px;
+    background: #1E2030;
+    border-radius: 0px;
+    border: 2px solid transparent;
+    font-size: 16px;
+}
+.power-mode-selector button:hover {
+    background: #1E2030;
+}
+
+.widget-mpris {
+    background: #1e2030;
+    border-radius: 15px;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #444a73;
+}
+.widget-mpris-title { color: #7cafff; font-weight: bold; }
+.widget-mpris-subtitle { color: #C8D3F5; }
+
+.notification-row {
+    margin-top: 10px;
+    background: #2f3b4d;
+    border-radius: 12px;
+}
+
+/* .powermode-buttons button {
+    font-size: 15px;
+} */
