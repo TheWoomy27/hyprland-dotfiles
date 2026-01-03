@@ -36,7 +36,7 @@
   "widget-config": {
     "menubar#top": {
       "menu#powermode-buttons": {
-        "label": "    ",
+        "label": " 67%",
         "position": "left",
         "actions": [
           {
@@ -153,15 +153,15 @@
         "position": "left",
         "actions": [
           {
-            "label": "Performance",
+            "label": "󰓅 Performance",
             "command": "powerprofilesctl set performance"
           },
           {
-            "label": "Balanced",
+            "label": "  Balanced",
             "command": "powerprofilesctl set balanced"
           },
           {
-            "label": "Power-saver",
+            "label": "󰌪 Power-saver",
             "command": "powerprofilesctl set power-saver"
           }
         ]
@@ -212,11 +212,11 @@
           }
         ]
       },
-      "buttons#other2": {
+      "buttons#bars": {
         "position": "right",
         "actions": [
           {
-            "label": "idk yet",
+            "label": " Tittle Bars",
             "command": "",
             "type": "toggle"
           }

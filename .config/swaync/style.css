@@ -1,6 +1,6 @@
 * {
     font-family: "Hack Nerd Font", sans-serif;
-    transition: 100ms all;
+    transition: 200ms all;
     outline: none;
     font-weight: bold;
 }
@@ -100,6 +100,7 @@
     border-top-right-radius: 5px;
 }
 
+/* All toggle labels */
 .wifi label {
     margin-left: -30px;
 }
@@ -116,13 +117,13 @@
     margin-left: 0px;
 }
 .airplane-mode label {
-    margin-left: -10px;
+    margin-left: -15px;
 }
 .caffeine label {
     margin-left: -50px;
 }
-.other2 label {
-    margin-left: -80px;
+.bars label {
+    margin-left: -40px;
 }
 
 /* All selectors */
@@ -173,7 +174,7 @@
 
 .notification-row {
     margin-top: 10px;
-    background: #2f3b4d;
+    background: transparent;
     border-radius: 12px;
 }
 

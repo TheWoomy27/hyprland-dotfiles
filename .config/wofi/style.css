@@ -1,11 +1,13 @@
 * {
     font-family: "Hack Nerd Font"; 
+    outline: none;
 }
 
 window {
     border: 25px solid transparent;
     border-radius: 25px;
     color: #7cafff;
+    background: transparent;
     background-image:
         linear-gradient(#11111b, #11111b),
         linear-gradient(90deg, #7cafff, #3b63cf);

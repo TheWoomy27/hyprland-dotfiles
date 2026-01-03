@@ -125,3 +125,5 @@ source $ZSH/oh-my-zsh.sh
 [[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
+#alias powerrename="sudo /home/austin/Downloads/PowerRenameExt-0.0.1"
+alias powerrename="/home/austin/Downloads/PowerRenameExt-0.0.1.AppImage"
