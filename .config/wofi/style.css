@@ -1,6 +1,7 @@
 * {
     font-family: "Hack Nerd Font"; 
     outline: none;
+    transition: 100ms all;
 }
 
 window {

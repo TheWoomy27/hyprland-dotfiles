@@ -79,8 +79,8 @@ tooltip {
 #tray,
 #battery,
 #custom-exit {
-    font-weight: bold;
-    border: 2px solid transparent;
+    font-weight: bolder;
+    border: 3px solid transparent;
     border-radius: 16px;
     color: #7cafff;
     background-image:
@@ -140,17 +140,23 @@ tray {
     padding-right: 4px;
 }
 
+#workspaces {
+    min-width: 221px;
+}
+
 #workspaces button {
     margin-right: 2px;
+    border-radius: 12px;
 }
 #workspaces button:last-child {
-    margin-right: 0;
+    margin-right: 2px;
 }
 
 #workspaces button.active {
     transition: all 250ms ease-in-out;
     min-width: 50px;
     background: #7cafff;
+    /* margin-right: 0px; */
 }
 
 #taskbar {

@@ -36,7 +36,7 @@
   "widget-config": {
     "menubar#top": {
       "menu#powermode-buttons": {
-        "label": " 67%",
+        "label": " %",
         "position": "left",
         "actions": [
           {
@@ -129,7 +129,7 @@
         "position": "right",
         "actions": [
           {
-            "label": " Bluetooth",
+            "label": "󰂯 Bluetooth",
             "command": "",
             "type": "toggle",
             "active": true
