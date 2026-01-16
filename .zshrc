@@ -127,3 +127,5 @@ alias dotfiles='/usr/bin/git --git-dir=$HOME/.cfg/ --work-tree=$HOME'
 typeset -g POWERLEVEL9K_INSTANT_PROMPT=quiet
 #alias powerrename="sudo /home/austin/Downloads/PowerRenameExt-0.0.1"
 alias powerrename="/home/austin/Downloads/PowerRenameExt-0.0.1.AppImage"
+alias peaclock="peaclock --config-dir ~/.config/peaclock"
+alias cmatrix="cmatrix -C blue"

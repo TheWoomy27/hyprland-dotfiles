@@ -82,10 +82,10 @@ tooltip {
     font-weight: bolder;
     border: 3px solid transparent;
     border-radius: 16px;
-    color: #7cafff;
+    color: #7badff;
     background-image:
-        linear-gradient(#11111b, #11111b),
-        linear-gradient(45deg, #7cafff, #3b63cf);
+        linear-gradient(#16171F, #16171F),
+        linear-gradient(45deg, #7badff, #3b63cf);
     background-origin: border-box;
     background-clip: padding-box, border-box;
 }
@@ -141,7 +141,7 @@ tray {
 }
 
 #workspaces {
-    min-width: 221px;
+    min-width: 220px;
 }
 
 #workspaces button {
@@ -149,7 +149,7 @@ tray {
     border-radius: 12px;
 }
 #workspaces button:last-child {
-    margin-right: 2px;
+    margin-right: 0px;
 }
 
 #workspaces button.active {
