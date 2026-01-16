@@ -14,6 +14,15 @@
     border: 4px solid transparent;
 }
 
+.notification {
+    background: #1E2030;
+    border: 1px solid #1F202E;
+    color: #C8D3F5;
+}
+.notification button:hover{
+    background: #2F334D;
+}
+
 .widget-buttons-grid,
 .widget-top-row,
 .widget-volume,
@@ -167,7 +176,7 @@
     border-radius: 15px;
     padding: 10px;
     margin: 10px 0;
-    border: 1px solid #444a73;
+    border: 1px solid #1F202E;
 }
 .widget-mpris-title { color: #7cafff; font-weight: bold; }
 .widget-mpris-subtitle { color: #C8D3F5; }

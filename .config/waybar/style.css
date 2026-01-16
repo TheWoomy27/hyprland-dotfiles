@@ -16,7 +16,7 @@
 @define-color base alpha(#000000, 0.1);
 @define-color surface alpha(#1E2030, 1.0);
 @define-color text #cdd6f4;
-@define-color hoverBg alpha(@blue, 1);
+@define-color hoverBg alpha(#272939, 1);
 @define-color hoverFg #000000;
 @define-color activeBg alpha(@blue, 1);
 @define-color activeFg #1E2030;
@@ -48,8 +48,8 @@ button {
 }
 
 button:hover {
-    color: @hoverFg;
-    background: #7cafff;
+    color: #7cafff;
+    background: #33364E;
 }
 
 button.active {
@@ -98,6 +98,10 @@ tooltip {
     padding: 0 8px;
 }
 
+#hardware {
+    min-width: 160px;
+}
+
 /* #network 
     padding: 0 32px;
     min-width: 192px;
@@ -105,7 +109,7 @@ tooltip {
 } */
 
 #custom-cava {
-    padding: 0 5px;
+    padding: 0 0px;
     font-family: "Noto Sans Mono", "monospace";
 }
 
@@ -141,7 +145,15 @@ tray {
 }
 
 #workspaces {
+<<<<<<< HEAD
     min-width: 220px;
+=======
+    min-width: 186px;
+}
+
+#workspaces label {
+    padding-left: 0px
+>>>>>>> ada75c0e2b00980be8e1a428ebb82c30e63db474
 }
 
 #workspaces button {
