@@ -145,15 +145,11 @@ tray {
 }
 
 #workspaces {
-<<<<<<< HEAD
     min-width: 220px;
-=======
-    min-width: 186px;
 }
 
 #workspaces label {
     padding-left: 0px
->>>>>>> ada75c0e2b00980be8e1a428ebb82c30e63db474
 }
 
 #workspaces button {
