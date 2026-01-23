@@ -26,10 +26,11 @@
     all: unset;
     font-size: 1rem;
     font-weight: 900;
-    font-family: "Hack Nerd Font";
-    /*Font Awesome,
+    font-family: JetBrainsMonoNerdFont;
+    /*
+        "Hack Nerd Font",
+        Font Awesome,
         Roboto,
-        JetBrainsMonoNerdFont
         Helvetica,
         Arial,
         sans-serif;*/
@@ -59,7 +60,10 @@ button.active {
 
 tooltip {
     opacity: 1;
-    background: @hoverBg;
+    font-weight: lighter;
+    background: #1F202E;
+    border: 2px solid #111116;
+    border-radius: 8px;
 }
 
 #window {

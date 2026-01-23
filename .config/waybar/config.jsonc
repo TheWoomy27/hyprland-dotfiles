@@ -94,7 +94,7 @@
       "default": "",
     },
     "persistent-workspaces": {
-      "*": 5,
+      "*": 6,
     },
   },
 
@@ -181,6 +181,7 @@
   },
 
   "battery": {
+    "interval": 30,
     "states": {
       // "good": 95,
       "warning": 30,
@@ -190,7 +191,6 @@
     "format-charging": " {capacity}%",
     "format-plugged": " {capacity}%",
     "format-alt": "{icon}{time}",
-
     "format-icons": [" ", " ", " ", " ", " "],
   },
 
