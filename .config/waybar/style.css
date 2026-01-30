@@ -76,6 +76,7 @@ tooltip {
 #media,
 #hardware,
 #clock,
+#cava,
 #custom-cava,
 #network,
 #custom-icon,
@@ -131,7 +132,7 @@ tray {
 #custom-icon {
     font-size: 26px;
     padding: 0 17px;
-    padding-left: 9px;
+    padding-left: 11px;
 }
 
 #cpu,
@@ -167,7 +168,8 @@ tray {
 #workspaces button.active {
     transition: all 250ms ease-in-out;
     min-width: 50px;
-    background: #7cafff;
+    background: linear-gradient(90deg, #7cafff, #3b63cf);
+    
     /* margin-right: 0px; */
 }
 
