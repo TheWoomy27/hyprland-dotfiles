@@ -39,7 +39,7 @@
   },
     "menubar#top": {
       "menu#powermode-buttons": {
-        "label": " %",
+        "label": " 46%",
         "position": "left",
         "actions": [
           {

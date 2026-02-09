@@ -90,7 +90,7 @@ tooltip {
     color: #7badff;
     background-image:
         linear-gradient(#16171F, #16171F),
-        linear-gradient(45deg, #7badff, #3b63cf);
+        linear-gradient(135deg, #7cafff, #3b63cf);
     background-origin: border-box;
     background-clip: padding-box, border-box;
 }
@@ -167,7 +167,7 @@ tray {
 #workspaces button.active {
     transition: all 250ms ease-in-out;
     min-width: 50px;
-    background: linear-gradient(90deg, #7cafff, #3b63cf);
+    background: linear-gradient(135deg, #7cafff, #3b63cf);
     
     /* margin-right: 0px; */
 }
