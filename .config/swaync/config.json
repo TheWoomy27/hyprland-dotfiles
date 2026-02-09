@@ -34,6 +34,9 @@
     "notifications"
   ],
   "widget-config": {
+        "dnd": {
+      "label": "  Do Not Disturb"
+  },
     "menubar#top": {
       "menu#powermode-buttons": {
         "label": " %",
@@ -227,5 +230,4 @@
       "image-size": 96,
       "image-radius": 12
     }
-  }
 }
