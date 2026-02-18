@@ -190,7 +190,8 @@
     "default": "󰎇",
     "brave": ""
   },
-  "dynamic-separator": " : "
+  "dynamic-separator": " : ",
+  "title-len": 30,
 	// "ignored-players": ["firefox"]
   },
 
