@@ -15,12 +15,12 @@
     //"tray",
     //"hyprland/window",
     "custom/cava",
-    "mpris"
+    "group/hardware",
+    "network"
+    // "mpris"
   ],
   "modules-center": ["hyprland/workspaces"],
   "modules-right": [
-    "group/hardware",
-    "network",
     "group/media",
     "clock",
     "battery",
@@ -96,7 +96,7 @@
       "default": "",
     },
     "persistent-workspaces": {
-      "*": 5,
+      "*": 6,
     },
   },
 
