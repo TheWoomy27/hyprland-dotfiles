@@ -1,4 +1,5 @@
 source /usr/share/cachyos-fish-config/cachyos-config.fish
+source ~/.config/fish/desktop.fish
 
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias cmatrix='cmatrix -C blue'
@@ -8,6 +9,8 @@ alias vencord='sh -c "$(curl -sS https://vencord.dev/install.sh)"'
 eval "$(/home/linuxbrew/.linuxbrew/bin/brew shellenv fish)"
 
 set -gx PATH $PATH ~/.npm-global/bin   
+set -gx OPENCLAW_WS_DELTA_THROTTLE_MS 20
+
 
 # OpenClaw Completion
 # source "/home/austin/.openclaw/completions/openclaw.fish"

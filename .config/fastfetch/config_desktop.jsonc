@@ -1,0 +1,129 @@
+{
+  "$schema": "https://github.com/fastfetch-cli/fastfetch/raw/dev/doc/json_schema.json",
+   "logo": {
+    "type": "auto",
+    "source": "~/.config/fastfetch/cachyos.txt",
+    "padding": {
+        "top": 0,          
+        "left": 0,         
+        "right": 0         
+    },
+    "color": {
+        "1": "#7cafff",
+        "2": "#3b63cf",
+        "3": "#7cafff",
+    }
+  },
+  "display": {
+      "separator": "",
+      "constants": [
+
+        "\u001b[38;2;169;184;232m│"//                                                            │\u001b[60D\u001b[39m" // uncomment for bars at the end
+      ]
+    },
+  "modules": [
+      {
+        "type": "custom",
+        "key": "{#38;2;169;184;232}╭─────────────╮",
+        "format": "{#38;2;169;184;232}╭─────────────────────── Software ───────────────────────╮",
+      },
+      {
+        "type": "title",
+        "key": "{#38;2;169;184;232}│ {#34} User      {#38;2;169;184;232}│",
+        "format": "{$1}{#39}{user-name}"
+      },
+      {
+        "type": "os",
+        "key": "{#38;2;169;184;232}│ {#34} OS        {#38;2;169;184;232}│",
+        "format": "{$1}{#39}{pretty-name} {#38;2;130;139;184}{arch}"
+      },
+      {
+        "type": "kernel",
+        "key": "{#38;2;169;184;232}│ {#34}󰒓 Kernel    {#38;2;169;184;232}│",
+        "format": "{$1}{#39}{sysname} {#38;2;130;139;184}{release}",
+      },
+      {
+        "type": "wm",
+        "key": "{#38;2;169;184;232}│ {#34} WM        {#38;2;169;184;232}│",
+        "format": "{$1}{#39}{pretty-name} {#38;2;130;139;184}v{version}"
+      }, 
+      {
+        "type": "terminal",
+        "key": "{#38;2;169;184;232}│ {#34} Terminal  {#38;2;169;184;232}│",
+        "format": "{$1}{#39}{pretty-name} {#38;2;130;139;184}v{version}"
+      },
+      {
+        "type": "shell",
+        "key": "{#38;2;169;184;232}│ {#34} Shell     {#38;2;169;184;232}│",
+        "format": "{$1}{#39}{pretty-name} {#38;2;130;139;184}v{version}"
+      },
+      {
+        "type": "terminalfont",
+        "key": "{#38;2;169;184;232}│ {#34} Font      {#38;2;169;184;232}│",
+        "format": "{$1}{#39}{name} {#38;2;130;139;184}[{size}]"
+      },
+      {
+        "type": "custom",
+        "key": "{#38;2;169;184;232}╰─────────────╯",
+        "format": "{#38;2;169;184;232}╰────────────────────────────────────────────────────────╯",
+      },
+      "break",
+      {
+        "type": "custom",
+        "key": "{#38;2;169;184;232}╭─────────────╮",
+        "format": "{#38;2;169;184;232}╭─────────────────────── Hardware ───────────────────────╮",
+      },
+      {
+        "type": "board",
+        "key": "{#38;2;169;184;232}│ {#34} Board     {#38;2;169;184;232}│",
+        "showPeCoreCount": true,
+        "temp": true,
+        "format": "{$1}{#39}MSI {name}"
+      },
+      {
+        "type": "cpu",
+        "key": "{#38;2;169;184;232}│ {#34} CPU       {#38;2;169;184;232}│",
+        "showPeCoreCount": true,
+        "temp": true,
+        "format": "{$1}{#39}{name} {#38;2;130;139;184}{freq-max}"
+      },
+      {
+        "type": "gpu",
+        "key": "{#38;2;169;184;232}│ {#34}󰢮 GPU       {#38;2;169;184;232}│",
+        "detectionMethod": "auto",
+        "driverSpecific": false,
+        "format": "{$1}{#39}{vendor} {name} {#38;2;130;139;184}{frequency} {#38;2;130;139;184}[{type}]"
+      },
+      {
+        "type": "memory",
+        "key": "{#38;2;169;184;232}│ {#34} Memory    {#38;2;169;184;232}│",
+        "format": "{$1}{#39}Corsair Vengance RGB Pro {#38;2;130;139;184}{used} / {total} 3600 Mhz",
+      },
+      {
+        "type": "disk",
+        "key": "{#38;2;169;184;232}│ {#34} Disk      {#38;2;169;184;232}│",
+        "format": "{$1}{#39}{mountpoint} {#38;2;130;139;184}{size-used} / {size-total} ({size-percentage})"
+      },
+      {
+        "type": "custom",
+        "key": "{#38;2;169;184;232}│ {#34}󰇅 Case      {#38;2;169;184;232}│",
+        "format": "{$1}{#39}Phanteks Eclipse P500A {#38;2;130;139;184}[ATX Mid Tower]",
+      },
+      {
+        "type": "display",
+        "key": "{#38;2;169;184;232}│ {#34}󰍹 Display   {#38;2;169;184;232}│",
+        "format": "{$1}{#39}LG 27GL850-B {inch}.0” {width}x{height} {refresh-rate} Hz",
+      },
+      {
+        "type": "custom",
+        "key": "{#38;2;169;184;232}╰─────────────╯",
+        "format": "{#38;2;169;184;232}╰────────────────────────────────────────────────────────╯",
+      }
+    ],
+  "display": {
+  	"color": {
+  	  		"title": "blue",
+  	  		"keys": "blue"
+  	  	}
+  }
+}
