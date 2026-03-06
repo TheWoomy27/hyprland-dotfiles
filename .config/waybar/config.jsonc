@@ -210,11 +210,11 @@
   // Network
   "network": {
     "format": "{ifname}",
-    "format-wifi": "  {signalStrength}%", //  {bandwidthDownBytes}  {bandwidthUpBytes} ",
+    "format-wifi": " {signalStrength}%", //  {bandwidthDownBytes}  {bandwidthUpBytes} ",
     "format-ethernet": "",
     "format-disconnected": "󰲛",
-    "tooltip-format": "  {ifname} via {gwaddri}",
-    "tooltip-format-wifi": "   {essid}",
+    "tooltip-format": " {ifname} via {gwaddri}",
+    "tooltip-format-wifi": " {essid}",
     "tooltip-format-ethernet": "  {ifname} ({ipaddr}/{cidr})",
     "tooltip-format-disconnected": "Disconnected",
     "max-length": 50,
@@ -230,8 +230,8 @@
       "critical": 15,
     },
     "format": "{icon}{capacity}%",
-    "format-charging": " {capacity}%",
-    "format-plugged": " {capacity}%",
+    "format-charging": " {capacity}%",
+    "format-plugged": "󱐥 {capacity}%",
     "format-alt": "{icon}{time}",
     "format-icons": [" ", " ", " ", " ", " "],
   },
@@ -304,8 +304,8 @@
   "pulseaudio": {
     "format": "{icon}{volume}%",
     "format-bluetooth": "{volume}% {icon} ",
-    "format-bluetooth-muted": "  {icon} ",
-    "format-muted": " ",
+    "format-bluetooth-muted": "󰝟 {icon} ",
+    "format-muted": "󰝟 ",
     "format-icons": {
       "headphone": "",
       "hands-free": "",
@@ -442,11 +442,11 @@
   // Network
   "network": {
     "format": "{ifname}",
-    "format-wifi": "  {signalStrength}%", //  {bandwidthDownBytes}  {bandwidthUpBytes} ",
+    "format-wifi": " {signalStrength}%", //  {bandwidthDownBytes}  {bandwidthUpBytes} ",
     "format-ethernet": "",
     "format-disconnected": "󰲛",
     "tooltip-format": "  {ifname} via {gwaddri}",
-    "tooltip-format-wifi": "   {essid}",
+    "tooltip-format-wifi": " {essid}",
     "tooltip-format-ethernet": "  {ifname} ({ipaddr}/{cidr})",
     "tooltip-format-disconnected": "Disconnected",
     "max-length": 50,
