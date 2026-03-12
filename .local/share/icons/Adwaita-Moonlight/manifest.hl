@@ -1,0 +1,4 @@
+name = Adwaita-Moonlight
+description = Moonlight version of the Adwaita cursor
+version = 0.1
+cursors_directory = hyprcursors
