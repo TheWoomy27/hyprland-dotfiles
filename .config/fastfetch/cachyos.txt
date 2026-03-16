@@ -1,4 +1,4 @@
-           $2.o$1p$2q$1pppppppppppppppppppppppp:                    
+\           $2.o$1p$2q$1pppppppppppppppppppppppp:                    
           $2:dl$1pp$2ddl$1pppppppppppppppppppp:       $2plq          
          $2:ddl$1ppp$2ddddll$1ppppppppppppppp:        $1txf          
         $2ddddl$1pppp$2dddddddl$1pppppppppp:                        
@@ -12,11 +12,11 @@ $2:bllllllllll$1:.                          $1tbbxf
  $2pdddddddl$1pppp.                                   $2.qlllp.
   $2:ddl$1ppppppppp.                                 $2,ddddddlb
    $1.:ppppppppppp,                                $1d$2f$1d$2f$1d$2f$1d$2f$1b
-    .ppoooooppppp;                               dppppppp:
+    .ppoooooppppp;                               qpppppppp
       :pppppp:$2llll:                               $1tpppppf 
        :pppppp$2ddddd$1ppp$2ldddddddddddddddddddddddf            
         $1:ppppp$2dddd$1pppppppp$2lddddddddddddddddddb              
          $1.pppp$2ddd$1pppppppppppp$2lddddddddddddddb               
-          $1.ppp$2dd$1pppppppppppppppp$2lldddddddddl                
+          $1.ppp$2dd$1pppppppppppppppp$2lldddddddddf                
            $1.pp$2d$1ppppppppppppppppppppp$2lddddd:                 
             $1.d$2[$1dddddddddddddddddddddddd$2lb'       
