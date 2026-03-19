@@ -43,7 +43,7 @@
   },
   "temperature": {
     "format": "{icon} {temperatureC}°C",
-    "format-icons": [""], //["", "", ""],
+    "format-icons": ["", "", "", "", ""],
     "interval": 1,
     "critical-threshold": 80,
     "hwmon-path-abs": "/sys/devices/platform/coretemp.0/hwmon",
@@ -54,10 +54,10 @@
     "modules": ["cpu", "memory", "disc", "temperature"],
   },
   "pulseaudio": {
-    "format": "{icon}{volume}%",
+    "format": "{icon} {volume}%",
     "format-bluetooth": "{volume}% {icon} ",
-    "format-bluetooth-muted": "  {icon} ",
-    "format-muted": " ",
+    "format-bluetooth-muted": " {icon} ",
+    "format-muted": " 0%",
     "format-icons": {
       "headphone": "",
       "hands-free": "",
@@ -65,7 +65,7 @@
       "phone": "",
       "portable": "",
       "car": "",
-      "default": [" ", " ", " "],
+      "default": ["", "", ""],
     },
     "scroll-step": 5,
     "on-click-right": "pavucontrol",
@@ -74,7 +74,7 @@
   "pulseaudio#mic": {
     "format": "{icon} {format_source}",
     "format-source": " {volume}%",
-    "format-source-muted": " ",
+    "format-source-muted": "",
     "on-scroll-up": "amixer set Capture 5%+",
     "on-scroll-down": "amixer set Capture 5%-",
     "on-click-right": "pavucontrol",
