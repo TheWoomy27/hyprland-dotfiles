@@ -87,13 +87,14 @@ tooltip {
     font-weight: bolder;
     border: 3px solid transparent;
     border-radius: 16px;
-    color: #7badff;
+    color: #7cafff;
     background-image:
-        linear-gradient(#16171F, #16171F),
+        linear-gradient(#16171F),
         linear-gradient(135deg, #7cafff, #3b63cf);
     background-origin: border-box;
     background-clip: padding-box, border-box;
 }
+
 
 #mpris {
     min-width: 50px;
@@ -111,11 +112,11 @@ tooltip {
     min-width: 160px;
 }
 
-/* #network 
-    padding: 0 32px;
-    min-width: 192px;
-    padding-right: 12px;
-} */
+#network {
+    padding: 0 10px;
+    /* min-width: 192px;
+    padding-right: 12px; */
+}
 
 #custom-cava {
     padding: 0 0px;
@@ -134,7 +135,7 @@ tray {
 
 #custom-icon {
     font-size: 26px;
-    padding: 0 10px;
+    padding: 0 7px;
 }
 
 #cpu,

@@ -1,0 +1,43 @@
+# Moonlight
+# A port of the Moonlight VSCode theme by atomiks.
+
+[meta]
+version = 1
+name = "Moonlight"
+description = "A port of the Moonlight VSCode theme by atomiks."
+variant = "dark"
+icon = "icons/moonlight.png"
+
+[colors.core]
+background = "#222436"        # Base
+foreground = "#c8d3f5"        # Text
+secondary_background = "#1e2030"  # Mantle
+border = "#131421"            # Surface0
+accent = "#7cafff"            # Blue
+
+[colors.accents]
+blue = "#3b63cf"
+green = "#7af8ca"
+magenta = "#af9fff"
+orange = "#ff966c"
+purple = "#7a88cf"
+red = "#ff5370"
+yellow = "#ffc777"
+cyan = "#7cafff"
+
+[colors.text]
+default = "#c8d3f5"
+muted = "#a9b8e8"
+danger = "#ffc777"
+success = "#7af8ca"
+
+
+[colors.text.links
+default = "#60bdff"
+visited = "#72cef1"
+
+[colors.list.item.selection]
+background = "#2f334d"
+foreground = "#191a2a"
+secondary_background = "#1e2030"
+secondary_foreground = "#191a2a"
