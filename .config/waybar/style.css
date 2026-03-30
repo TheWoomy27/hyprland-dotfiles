@@ -20,7 +20,7 @@
 @define-color hoverFg #000000;
 @define-color activeBg alpha(@blue, 1);
 @define-color activeFg #1E2030;
-@define-color shadow alpha(@blue, 0.25);
+@define-color shadow alpha(@blue, 0.25); 
 
 * {
     all: unset;

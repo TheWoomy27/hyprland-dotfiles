@@ -1,4 +1,4 @@
-\           $2.o$1p$2q$1pppppppppppppppppppppppp:                    
+           $2.o$1p$2q$1pppppppppppppppppppppppp:                    
           $2:dl$1pp$2ddl$1pppppppppppppppppppp:       $2plq          
          $2:ddl$1ppp$2ddddll$1ppppppppppppppp:        $1txf          
         $2ddddl$1pppp$2dddddddl$1pppppppppp:                        
