@@ -9,7 +9,7 @@
   "margin-bottom": -11,
   // "mode": "dock",
   "reload_style_on_change": true,
-  "output": ["DP-4", "eDP-1"],
+  "output": ["DP-4"],
   "include": ["~/.config/waybar/default-modules.json"],
   "modules-left": [
     "custom/icon",
@@ -44,18 +44,20 @@
   "margin-bottom": -11,
   // "mode": "dock",
   "reload_style_on_change": true,
-  "output": ["DP-5"],
+  "output": ["eDP-1"],
   "modules-left": [
     "custom/icon",
     //"tray",
     //"hyprland/window",
     "custom/cava",
     "group/hardware",
+    "network",
   ],
   "modules-center": ["hyprland/workspaces"],
   "modules-right": [
-    "network",
+    "group/media",
     "clock",
+    "battery",
     "custom/notification",
     "custom/exit",
   ],
@@ -128,7 +130,7 @@
       "default": "",
     },
     "persistent-workspaces": {
-      "*": 5,
+      "*": 6,
     },
   },
 
@@ -144,7 +146,7 @@
     "separate-outputs": true,
   },
   "custom/icon": {
-    "format": "󰣇", //"\uf30a",
+    "format": "", //"\uf30a",
     "tooltip": false,
     "on-click": "wofi",
   },
