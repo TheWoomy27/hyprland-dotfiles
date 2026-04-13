@@ -13,7 +13,7 @@
   "include": ["~/.config/waybar/default-modules.json"],
   "modules-left": [
     "custom/icon",
-    // "custom/cava",
+    "custom/cava",
     "group/hardware",
     "network"
     // "mpris"
