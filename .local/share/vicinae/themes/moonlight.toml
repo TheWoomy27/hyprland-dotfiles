@@ -9,35 +9,53 @@ variant = "dark"
 icon = "icons/moonlight.png"
 
 [colors.core]
+accent = "#7cafff"            # Blue
+accent_foreground = "#c8d3f5"
 background = "#222436"        # Base
 foreground = "#c8d3f5"        # Text
 secondary_background = "#1e2030"  # Mantle
 border = "#131421"            # Surface0
-accent = "#7cafff"            # Blue
+
+[colors.main_window]
+border = { name = "colors.accents.cyan", opacity = 0.85}
+footer = { background = "colors.core.secondary_background" }
 
 [colors.accents]
 blue = "#3b63cf"
 green = "#7af8ca"
 magenta = "#af9fff"
 orange = "#ff966c"
-purple = "#7a88cf"
 red = "#ff5370"
 yellow = "#ffc777"
 cyan = "#7cafff"
+purple = "#7a88cf"
 
 [colors.text]
 default = "#c8d3f5"
 muted = "#a9b8e8"
 danger = "#ffc777"
 success = "#7af8ca"
+selection = { background = "#444a73", foreground = "#c8d3f5" }
 
-
-[colors.text.links
+[colors.text.links]
 default = "#60bdff"
 visited = "#72cef1"
 
+[colors.input]
+border = "#7cafff"
+border_focus = "#7cafff"
+border_error = "#ff5370"
+
 [colors.list.item.selection]
 background = "#2f334d"
-foreground = "#191a2a"
-secondary_background = "#1e2030"
-secondary_foreground = "#191a2a"
+foreground = "#c8d3f5"
+secondary_background = "#00ff00"
+secondary_foreground = "#c8d3f5"
+
+[colors.grid.item]
+background = "#1e2030"
+hover = { outline = "#2f334d" }
+selection = { outline = "#7cafff" }
+
+[colors.scrollbars]
+background = "#30344a"

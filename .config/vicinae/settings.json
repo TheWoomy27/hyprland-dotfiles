@@ -27,9 +27,11 @@
       "system_info": false
    },
    "launcher_window": {
-      "opacity": 0.8,
+      "opacity": 0.85,
       "client_side_decorations": {
-         "enabled": true
+         "enabled": true,
+         "rounding": 20,
+         "border_width": 3
       }
    },
    "providers": {
