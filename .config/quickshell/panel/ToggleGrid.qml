@@ -22,6 +22,7 @@ Item {
     property bool   dndOn:          false
     property bool   airplaneOn:     false
     property bool   caffeineOn:     false
+    property bool   blurOn:         true
     property bool   animationsOn:   true
     property string nightLightTemp: "3500"
     property string inhibitPid:     ""
@@ -41,6 +42,12 @@ Item {
     }
     Process { id: apOn;  command: ["bash", "-c", "nmcli radio wifi off && bluetoothctl power off"]; running: false }
     Process { id: apOff; command: ["bash", "-c", "nmcli radio wifi on  && bluetoothctl power on"];  running: false }
+    Process {
+        id: blurToggle
+        command: ["bash", "-c", "hyprctl keyword decoration:blur:enabled " + (root.blurOn ? "false" : "true")]
+        running: false
+        onRunningChanged: if (!running) root.blurOn = !root.blurOn
+    }
     Process {
         id: animToggle
         command: ["bash", "-c", "hyprctl keyword animations:enabled " + (root.animationsOn ? "false" : "true")]
@@ -210,7 +217,24 @@ Item {
             }
         }
 
-        // ── Row 4: Caffeine | Animations ─────────────────────────────────
+        // ── Row 4: Blur | Animations ─────────────────────────────────────
+        RowLayout {
+            width: parent.width; spacing: 8
+            Toggle {
+                Layout.fillWidth: true; implicitHeight: 48
+                icon: "\udb80\udcb5"
+                label: "Blur"; active: root.blurOn
+                onClicked: blurToggle.running = true
+            }
+            Toggle {
+                Layout.fillWidth: true; implicitHeight: 48
+                icon: "󰗘"
+                label: "Animations"; active: root.animationsOn
+                onClicked: animToggle.running = true
+            }
+        }
+
+        // ── Row 5: Caffeine ──────────────────────────────────────────────
         RowLayout {
             width: parent.width; spacing: 8
             Toggle {
@@ -218,12 +242,6 @@ Item {
                 icon: "󰅶"
                 label: "Caffeine"; active: root.caffeineOn
                 onClicked: { if (!root.caffeineOn) cafOn.running = true; else cafOff.running = true }
-            }
-            Toggle {
-                Layout.fillWidth: true; implicitHeight: 48
-                icon: "󰗘"
-                label: "Animations"; active: root.animationsOn
-                onClicked: animToggle.running = true
             }
         }
     }

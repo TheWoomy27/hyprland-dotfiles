@@ -14,7 +14,7 @@
    "pop_to_root_on_close": true,
    "font": {
       "normal": {
-         "family": "JetBrainsMono NF",
+         "family": "Adwaita Sans",
          "size": 11
       }
    },
@@ -632,6 +632,9 @@
             },
             "steam": {
                "enabled": true
+            },
+            "vesktop": {
+               "alias": "Discord"
             }
          }
       },
