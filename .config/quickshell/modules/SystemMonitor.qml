@@ -16,6 +16,12 @@ BarItem {
     property int  _memAvailable: 0
 
     Process {
+        id: btopProc
+        command: ["hyprctl", "dispatch", "hl.dsp.exec_cmd(\"[float on; size 1150 646;] kitty -e btop\")"]
+        running: false
+    }
+
+    Process {
         id: cpuProc
         command: ["bash", "-c", "head -1 /proc/stat"]
         running: false
@@ -142,5 +148,12 @@ BarItem {
             font.weight:    Font.ExtraBold
             color: "#7cafff"
         }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+        cursorShape: Qt.PointingHandCursor
+        onClicked: btopProc.running = true
     }
 }

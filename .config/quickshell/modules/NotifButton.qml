@@ -64,17 +64,17 @@ BarItem {
     Text {
         id: bellText
         anchors.centerIn: parent
-        text: root.dndActive       ? "󰂜"
-            : root.panelOpen       ? ""
-            : root.unreadCount > 0 ? "󱅫"
-            :                        "󰂚"
+        text: root.dndActive       ? "" //󰂜
+            : root.panelOpen       ? "" //󰂚
+            : root.unreadCount > 0 ? "" //󱅫
+            :                        "" //󰂚
         font.family:    "JetBrainsMono Nerd Font Propo"
         font.pixelSize: 25
         font.weight:    Font.ExtraBold
-        color: root.panelOpen ? "#3b63cf" : "#7cafff"
-        scale: root.hovered ? 1.15 : 1.0
+        color: root.panelOpen ? "#7cafff" : "#7cafff"
+        scale: root.hovered ? 1.0 : 0.8
         Behavior on color { ColorAnimation { duration: 150 } }
-        Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+        Behavior on scale { NumberAnimation { duration: 500; easing.type: Easing.OutBack } }
 
         SequentialAnimation on rotation {
             running: root.unreadCount > 0 && !root.dndActive && !root.panelOpen

@@ -12,6 +12,9 @@ Item {
     property string label:   "Toggle"
     property bool   active:  false
     property bool   interactive: true
+    property int    iconPixelSize: 18
+    property real   iconHoverScale: 1.28
+    property int    hoverScaleDuration: 600
 
     signal clicked()
 
@@ -134,13 +137,13 @@ Item {
             Layout.alignment: Qt.AlignVCenter
             text:  root.icon
             font.family:    "JetBrainsMono Nerd Font Propo"
-            font.pixelSize: 18
+            font.pixelSize: root.iconPixelSize
             font.weight:    Font.ExtraBold
             color: root.active ? "#191a2a" : "#7cafff"
             Behavior on color { ColorAnimation { duration: 200 } }
 
-            scale: root.hov ? 1.12 : 1.0
-            Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+            scale: root.hov ? root.iconHoverScale : 1.0
+            Behavior on scale { NumberAnimation { duration: root.hoverScaleDuration; easing.type: Easing.OutBack } }
         }
 
         Text {

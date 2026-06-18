@@ -66,6 +66,9 @@ Item {
     ExpandableToggle {
         anchors.fill: parent
         icon:     "\uf1eb"
+        iconPixelSize: 20
+        iconHoverScale: 1.32
+        chevronHoverScale: 1.28
         label:    root.ssid !== "" ? root.ssid : "Wi-Fi"
         active:   root.ssid !== ""
         expanded: root.expanded

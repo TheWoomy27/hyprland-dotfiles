@@ -47,7 +47,7 @@ Item {
     Timer { interval: 30000; running: root.hasBattery; repeat: true
             onTriggered: batRead.running = true }
 
-    Process { id: settingsProc;  command: ["hyprctl", "dispatch", "exec", "[workspace special:magic silent] kitty --class hyprmod hyprmod"];  running: false }
+    Process { id: settingsProc;  command: ["hyprctl", "dispatch", "hl.dsp.exec_cmd(\"[workspace special:magic silent] kitty --class hyprmod hyprmod\")"];  running: false }
     Process { id: lockProc;  command: ["hyprlock"];  running: false }
     Process { id: powerProc; command: ["wlogout"];   running: false }
 
@@ -177,11 +177,11 @@ Item {
         Text {
             anchors.centerIn: parent; text: icon
             font.family: "JetBrainsMono Nerd Font Propo"
-            font.pixelSize: 15; font.weight: Font.ExtraBold
+            font.pixelSize: 17; font.weight: Font.ExtraBold
             color: dangerColor && parent.hov ? "#ff6b6b" : "#7cafff"
-            scale: parent.hov ? 1.15 : 1.0
+            scale: parent.hov ? 1.30 : 1.0
             Behavior on color { ColorAnimation { duration: 120 } }
-            Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+            Behavior on scale { NumberAnimation { duration: 600; easing.type: Easing.OutBack } }
         }
 
         MouseArea {

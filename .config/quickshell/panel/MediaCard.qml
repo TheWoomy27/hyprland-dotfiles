@@ -543,9 +543,9 @@ Item {
                  : btn.muted ? "#c3d3ec"
                  : "#dce8ff"
             opacity: btn.muted ? 0.72 : 1.0
-            scale: btn.hov ? 1.13 : 1.0
+            scale: btn.hov ? (btn.main ? 1.26 : 1.32) : 1.0
             Behavior on color { ColorAnimation { duration: 120 } }
-            Behavior on scale { NumberAnimation { duration: 140; easing.type: Easing.OutBack } }
+            Behavior on scale { NumberAnimation { duration: 600; easing.type: Easing.OutBack } }
         }
 
         MouseArea {

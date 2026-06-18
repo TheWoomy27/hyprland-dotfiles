@@ -27,6 +27,7 @@ QtObject {
         }
 
         Item {
+            id: barContent
             anchors.fill: parent
 
             // Left: AppLauncher | SystemMonitor | Mpris | Cava
@@ -38,19 +39,29 @@ QtObject {
                 }
                 spacing: 8
 
-                AppLauncher   {}
-                SystemMonitor {}
-                Mpris         {}
-                Cava          {}
+                AppLauncher   { id: appLauncher }
+                SystemMonitor { id: systemMonitor }
+                Mpris {
+                    id: mpris
+                    maxWidth: {
+                        var mprisStart = leftRow.x
+                            + appLauncher.width + leftRow.spacing
+                            + systemMonitor.width + leftRow.spacing
+                        var cavaSpace = cava.visible ? cava.width + leftRow.spacing : 0
+                        return Math.max(42, workspaces.x - mprisStart - cavaSpace)
+                    }
+                }
+                Cava          { id: cava }
             }
 
-            // Centre: Workspaces — truly centred
+            // Centre: Workspaces
             Workspaces {
+                id: workspaces
                 anchors.centerIn: parent
                 screen: root.screen
             }
 
-            // Right: Wifi | Audio | Clock | Battery | NotifButton | PowerMenu
+            // Right: WallpaperSwitcher | Wifi | Audio | Clock | Battery | NotifButton | PowerMenu
             RowLayout {
                 id: rightRow
                 anchors {
@@ -59,18 +70,19 @@ QtObject {
                 }
                 spacing: 8
 
+                WallpaperSwitcher {}
                 Wifi        {}
                 Audio       {}
                 Clock       {}
                 Battery     {}
-                NotifButton {
-                        panelOpen: root.panelOpen
-                        onTogglePanel: root.togglePanel()
-                    }
                 PowerMenu {
                     menuOpen: root.powerMenuOpen
                     onToggleMenu: root.powerMenuOpen = !root.powerMenuOpen
                 }
+                NotifButton {
+                        panelOpen: root.panelOpen
+                        onTogglePanel: root.togglePanel()
+                    }
             }
         }
     }
@@ -126,7 +138,7 @@ QtObject {
                 spacing: 2
 
                 PowerEntry { icon: "\udb80\udced"; label: "Lock";     cmd: ["hyprlock"] }
-                PowerEntry { icon: "\udb80\udf48"; label: "Logout";   cmd: ["hyprctl", "dispatch", "exit"] }
+                PowerEntry { icon: "\udb80\udf48"; label: "Logout";   cmd: ["hyprctl", "dispatch", "hl.dsp.exit()"] }
                 PowerEntry { icon: "\udb80\udc88"; label: "Reboot";   cmd: ["systemctl", "reboot"] }
                 PowerEntry { icon: "\udb81\udd74"; label: "Shutdown"; cmd: ["systemctl", "poweroff"]; danger: true }
             }

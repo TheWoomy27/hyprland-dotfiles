@@ -1,5 +1,5 @@
 // modules/AppLauncher.qml
-// Left click: (reserved for future quickshell component)
+// Left click: vicinae toggle
 // Right click: wofi --show drun
 import QtQuick
 import Quickshell.Io
@@ -9,6 +9,7 @@ BarItem {
     implicitWidth: 42
     hoverable: true
 
+    Process { id: leftProc;  command: ["vicinae", "toggle"]; running: false }
     Process { id: rightProc; command: ["wofi", "--show", "drun"]; running: false }
 
     MouseArea {
@@ -16,7 +17,8 @@ BarItem {
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         cursorShape: Qt.PointingHandCursor
         onClicked: function(m) {
-            if (m.button === Qt.RightButton) rightProc.running = true
+            if (m.button === Qt.LeftButton) leftProc.running = true
+            else                            rightProc.running = true
         }
     }
 
@@ -25,9 +27,9 @@ BarItem {
         width:  28
         height: 28
         anchors.centerIn: parent
-        scale: root.hovered ? 1.15 : 1.0
+        scale: root.hovered ? 1.2 : 1.0
         Behavior on scale {
-            NumberAnimation { duration: 400; easing.type: Easing.OutBack }
+            NumberAnimation { duration: 500; easing.type: Easing.OutBack }
         }
     }
 }

@@ -13,6 +13,12 @@ Item {
     property bool audioPlaying: false
     property bool shouldShow:   false
 
+    Process {
+        id: openCava
+        command: ["hyprctl", "dispatch", "hl.dsp.exec_cmd(\"[float on; size 1150 646;] kitty -e cava\")"]
+        running: false
+    }
+
     // Linger 5s after audio stops before hiding
     Timer {
         id: lingerTimer
@@ -34,7 +40,7 @@ Item {
     implicitWidth: shouldShow ? fullWidth : 0
 
     Behavior on implicitWidth {
-        NumberAnimation { duration: 600; easing.type: Easing.InOutCubic }
+        NumberAnimation { duration: 500; easing.type: Easing.InOutCubic }
     }
 
     // Don't take layout space or receive events when fully collapsed
@@ -110,5 +116,12 @@ Item {
                 function onLevelsChanged() { canvas.requestPaint() }
             }
         }
+    }
+
+    MouseArea {
+        anchors.fill: parent
+        acceptedButtons: Qt.RightButton
+        cursorShape: Qt.PointingHandCursor
+        onClicked: openCava.running = true
     }
 }

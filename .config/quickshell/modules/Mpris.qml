@@ -7,12 +7,13 @@ import Quickshell.Io
 
 BarItem {
     id: root
-    implicitWidth: mrow.implicitWidth + 20
+    implicitWidth: Math.min(mrow.implicitWidth + 20, maxWidth)
 
     property string activePlayer: ""
     property string artist:   ""
     property string title:    ""
     property string status:   "Stopped"   // Playing / Paused / Stopped
+    property real   maxWidth: 100000
     property bool   hasMedia: status !== "Stopped" && (artist !== "" || title !== "")
     property bool   _sawMetadata: false
 
@@ -63,57 +64,166 @@ BarItem {
         onTriggered: metaProc.running = true
     }
 
+    Timer {
+        id: refreshTimer
+        interval: 120
+        onTriggered: if (!metaProc.running) metaProc.running = true
+    }
+
     function playerCommand(action) {
         return root.activePlayer !== ""
             ? ["playerctl", "--player=" + root.activePlayer, action]
             : ["playerctl", action]
     }
 
-    Process { id: playPause; command: root.playerCommand("play-pause"); running: false }
-    Process { id: nextTrack; command: root.playerCommand("next");       running: false }
-    Process { id: prevTrack; command: root.playerCommand("previous");   running: false }
+    Process {
+        id: playPause
+        command: root.playerCommand("play-pause")
+        running: false
+        onRunningChanged: if (!running) refreshTimer.restart()
+    }
+    Process {
+        id: nextTrack
+        command: root.playerCommand("next")
+        running: false
+        onRunningChanged: if (!running) refreshTimer.restart()
+    }
+    Process {
+        id: prevTrack
+        command: root.playerCommand("previous")
+        running: false
+        onRunningChanged: if (!running) refreshTimer.restart()
+    }
+    Process {
+        id: focusSource
+        command: ["bash", "-c", [
+            "player=\"$1\"",
+            "title=\"$2\"",
+            "artist=\"$3\"",
+            "base=${player%%.*}",
+            "case \"$base\" in",
+            "    firefox|librewolf|zen|chromium|chrome|brave|vivaldi|opera)",
+            "        class_re=\"$base\"",
+            "        ;;",
+            "    spotify)",
+            "        class_re=\"spotify\"",
+            "        ;;",
+            "    *)",
+            "        class_re=\"$base\"",
+            "        ;;",
+            "esac",
+            "addr=$(hyprctl clients -j 2>/dev/null | jq -r --arg class \"$class_re\" --arg title \"$title\" --arg artist \"$artist\" '",
+            "    def norm: ascii_downcase;",
+            "    [",
+            "        .[]",
+            "        | .score = (",
+            "            (if ((.class // \"\") | norm | contains($class | norm)) then 10 else 0 end) +",
+            "            (if (($title | length) > 0 and ((.title // \"\") | norm | contains($title | norm))) then 4 else 0 end) +",
+            "            (if (($artist | length) > 0 and ((.title // \"\") | norm | contains($artist | norm))) then 2 else 0 end)",
+            "        )",
+            "        | select(.score > 0)",
+            "    ]",
+            "    | sort_by(.score)",
+            "    | reverse",
+            "    | .[0].address // empty",
+            "')",
+            "[ -n \"$addr\" ] && hyprctl dispatch \"hl.dsp.focus({ window = 'address:$addr' })\""
+        ].join("\n"), "_", root.activePlayer, root.title, root.artist]
+        running: false
+    }
 
     MouseArea {
         anchors.fill: parent
-        acceptedButtons: Qt.LeftButton
+        acceptedButtons: Qt.RightButton
         cursorShape: Qt.PointingHandCursor
-        onClicked: {
-            playPause.running = true
-            Qt.callLater(function() { metaProc.running = true })
-        }
-        onWheel: function(w) {
-            if (w.angleDelta.y > 0) prevTrack.running = true
-            else                    nextTrack.running = true
-            Qt.callLater(function() { metaProc.running = true })
-        }
+        onClicked: focusSource.running = true
     }
 
     RowLayout {
         id: mrow
-        anchors.centerIn: parent
+        anchors {
+            left: parent.left
+            leftMargin: 10
+            right: parent.right
+            rightMargin: 10
+            verticalCenter: parent.verticalCenter
+        }
         spacing: 6
 
-        // Play/Pause icon
-        Text {
-            text: root.status === "Playing" ? "\uf04c" : "\uf04b"
-            font.family:    "JetBrainsMono Nerd Font Propo"
-            font.pixelSize: 12
-            font.weight:    Font.ExtraBold
-            color: "#7cafff"
+        PlayerButton {
+            icon: "\uf048"
+            onClicked: {
+                prevTrack.running = true
+            }
         }
 
-        // Track label — max 28 chars, truncated with ellipsis
+        PlayerButton {
+            icon: root.status === "Playing" ? "\uf04c" : "\uf04b"
+            onClicked: {
+                playPause.running = true
+            }
+        }
+
+        PlayerButton {
+            icon: "\uf051"
+            onClicked: {
+                nextTrack.running = true
+            }
+        }
+
+        // Track label
         Text {
+            Layout.fillWidth: true
             text: {
-                var label = root.artist && root.title
+                return root.artist && root.title
                     ? root.artist + " – " + root.title
                     : root.title || root.artist
-                return label.length > 28 ? label.substring(0, 26) + "…" : label
             }
             font.family:    "JetBrainsMono Nerd Font Propo"
             font.pixelSize: 13
             font.weight:    Font.ExtraBold
             color: "#7cafff"
+            elide: Text.ElideRight
+            maximumLineCount: 1
+        }
+    }
+
+    WheelHandler {
+        onWheel: function(w) {
+            if (w.angleDelta.y > 0) prevTrack.running = true
+            else                    nextTrack.running = true
+        }
+    }
+
+    component PlayerButton: Item {
+        id: btn
+
+        property string icon: ""
+        signal clicked()
+
+        implicitWidth: 18
+        implicitHeight: 22
+        readonly property bool hovered: area.containsMouse
+
+        Text {
+            anchors.centerIn: parent
+            text: btn.icon
+            font.family: "JetBrainsMono Nerd Font Propo"
+            font.pixelSize: 12
+            font.weight: Font.ExtraBold
+            color: "#7cafff"
+            scale: btn.hovered ? 1.8 : 1.3
+            Behavior on color { ColorAnimation { duration: 120 } }
+            Behavior on scale { NumberAnimation { duration: 600; easing.type: Easing.OutBack } }
+        }
+
+        MouseArea {
+            id: area
+            anchors.fill: parent
+            hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            acceptedButtons: Qt.LeftButton
+            onClicked: btn.clicked()
         }
     }
 }

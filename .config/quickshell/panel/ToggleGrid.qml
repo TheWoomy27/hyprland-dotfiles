@@ -233,17 +233,6 @@ Item {
                 onClicked: animToggle.running = true
             }
         }
-
-        // ── Row 5: Caffeine ──────────────────────────────────────────────
-        RowLayout {
-            width: parent.width; spacing: 8
-            Toggle {
-                Layout.fillWidth: true; implicitHeight: 48
-                icon: "󰅶"
-                label: "Caffeine"; active: root.caffeineOn
-                onClicked: { if (!root.caffeineOn) cafOn.running = true; else cafOff.running = true }
-            }
-        }
     }
 
     // ── Shared dropdown row components ────────────────────────────────────

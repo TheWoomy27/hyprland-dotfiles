@@ -54,6 +54,9 @@ Item {
     ExpandableToggle {
         anchors.fill: parent
         icon:     "\uf294"
+        iconPixelSize: 21
+        iconHoverScale: 1.28
+        chevronHoverScale: 1.28
         label:    "Bluetooth"
         active:   root.btOn
         expanded: root.expanded

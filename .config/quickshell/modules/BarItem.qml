@@ -1,13 +1,22 @@
 // modules/BarItem.qml
 import QtQuick
+import QtQuick.Effects
 
 Item {
     id: root
 
     default property alias contentData: inner.data
-    property color bgColor:   "#191a2a"
+    property color bgColor:   "#131421"
     property bool  hoverable: true
-    property bool  hovered:   hoverArea.containsMouse
+    property bool  hovered:   hoverHandler.hovered
+    property bool  shadowEnabled: false
+    property color shadowColor: "#131421"
+    property real  shadowBlur: 0.95
+    property real  shadowOpacity: 1000.0
+    property real  shadowScale: 1.04
+    property real  shadowRingOpacity: 1.0
+    property real  shadowRingWidth: 7
+    property int   shadowVerticalOffset: 0
 
     implicitHeight: 42
 
@@ -36,6 +45,62 @@ Item {
         tAnim.from = gradientT
         tAnim.to   = hovered ? 1.0 : 0.0
         tAnim.start()
+    }
+
+    Canvas {
+        id: shadowShape
+        anchors.fill: parent
+        antialiasing: true
+        opacity: root.shadowEnabled ? 1.0 : 0.0
+        visible: opacity > 0
+        z: -1
+
+        layer.enabled: root.shadowEnabled
+        layer.smooth: true
+        layer.effect: MultiEffect {
+            shadowEnabled: true
+            shadowColor: root.shadowColor
+            shadowBlur: root.shadowBlur
+            shadowOpacity: root.shadowOpacity
+            shadowScale: root.shadowScale
+            shadowVerticalOffset: root.shadowVerticalOffset
+            shadowHorizontalOffset: 0
+        }
+
+        onPaint: {
+            var ctx = getContext("2d")
+            ctx.clearRect(0, 0, width, height)
+            if (!root.shadowEnabled) return
+
+            var lw = root.shadowRingWidth
+            var inset = lw / 2 + 1
+            var r = 16
+
+            ctx.save()
+            ctx.globalAlpha = root.shadowRingOpacity
+            ctx.strokeStyle = root.shadowColor
+            ctx.lineWidth = lw
+            ctx.beginPath()
+            ctx.moveTo(inset + r, inset)
+            ctx.arcTo(width - inset, inset, width - inset, height - inset, r)
+            ctx.arcTo(width - inset, height - inset, inset, height - inset, r)
+            ctx.arcTo(inset, height - inset, inset, inset, r)
+            ctx.arcTo(inset, inset, width - inset, inset, r)
+            ctx.closePath()
+            ctx.stroke()
+            ctx.restore()
+        }
+
+        onWidthChanged: requestPaint()
+        onHeightChanged: requestPaint()
+
+        Connections {
+            target: root
+            function onShadowEnabledChanged() { shadowShape.requestPaint() }
+            function onShadowColorChanged() { shadowShape.requestPaint() }
+            function onShadowRingOpacityChanged() { shadowShape.requestPaint() }
+            function onShadowRingWidthChanged() { shadowShape.requestPaint() }
+        }
     }
 
     Canvas {
@@ -86,13 +151,8 @@ Item {
         }
     }
 
-    MouseArea {
-        id: hoverArea
-        anchors.fill: parent
+    HoverHandler {
+        id: hoverHandler
         enabled:      root.hoverable
-        hoverEnabled: root.hoverable
-        propagateComposedEvents: true
-        onClicked: function(mouse) { mouse.accepted = false }
-        onPressed: function(mouse) { mouse.accepted = false }
     }
 }

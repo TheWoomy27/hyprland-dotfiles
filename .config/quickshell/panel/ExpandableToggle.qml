@@ -11,6 +11,11 @@ Item {
     property string label:    "Toggle"
     property bool   active:   false
     property bool   expanded: false
+    property int    iconPixelSize: 16
+    property real   iconHoverScale: 1.28
+    property int    chevronPixelSize: 11
+    property real   chevronHoverScale: 1.25
+    property int    hoverScaleDuration: 600
 
     signal toggled()
     signal expandClicked()
@@ -160,13 +165,13 @@ Item {
             Text {
                 text: root.icon
                 font.family:    "JetBrainsMono Nerd Font Propo"
-                font.pixelSize: 16
+                font.pixelSize: root.iconPixelSize
                 font.weight:    Font.ExtraBold
                 color: root.active ? "#191a2a" : "#7cafff"
                 Behavior on color { ColorAnimation { duration: 200 } }
-                scale: leftArea.containsMouse ? 1.12 : 1.0
+                scale: leftArea.containsMouse ? root.iconHoverScale : 1.0
                 Behavior on scale {
-                    NumberAnimation { duration: 160; easing.type: Easing.OutBack }
+                    NumberAnimation { duration: root.hoverScaleDuration; easing.type: Easing.OutBack }
                 }
             }
 
@@ -266,13 +271,13 @@ Item {
             anchors.centerIn: parent
             text: "\uf078"
             font.family:    "JetBrainsMono Nerd Font Propo"
-            font.pixelSize: 11
+            font.pixelSize: root.chevronPixelSize
             font.weight:    Font.ExtraBold
             color: root.active ? "#191a2a" : "#7cafff"
             Behavior on color { ColorAnimation { duration: 200 } }
-            scale: rightArea.containsMouse ? 1.12 : 1.0
+            scale: rightArea.containsMouse ? root.chevronHoverScale : 1.0
             Behavior on scale {
-                NumberAnimation { duration: 160; easing.type: Easing.OutBack }
+                NumberAnimation { duration: root.hoverScaleDuration; easing.type: Easing.OutBack }
             }
             rotation: root.expanded ? 180 : 0
             Behavior on rotation {

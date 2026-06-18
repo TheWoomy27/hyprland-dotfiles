@@ -1,5 +1,5 @@
 // modules/PowerMenu.qml
-// Left click: toggle quickshell popup  Right click: wlogout
+// Left click: wlogout  Right click: toggle quickshell popup
 import QtQuick
 import Quickshell.Io
 
@@ -18,7 +18,7 @@ BarItem {
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         cursorShape: Qt.PointingHandCursor
         onClicked: function(m) {
-            if (m.button === Qt.RightButton) wlogoutProc.running = true
+            if (m.button === Qt.LeftButton) wlogoutProc.running = true
             else root.toggleMenu()
         }
     }
@@ -30,8 +30,8 @@ BarItem {
         font.pixelSize: 20
         font.weight:    Font.ExtraBold
         color: root.menuOpen ? "#ff6b6b" : "#7cafff"
-        scale: root.hovered ? 1.15 : 1.0
+        scale: root.hovered ? 1.25 : 1.0
         Behavior on color { ColorAnimation { duration: 150 } }
-        Behavior on scale { NumberAnimation { duration: 150; easing.type: Easing.OutBack } }
+        Behavior on scale { NumberAnimation { duration: 500; easing.type: Easing.OutBack } }
     }
 }
