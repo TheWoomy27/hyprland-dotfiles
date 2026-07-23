@@ -52,7 +52,7 @@ Item {
     ExpandableToggle {
         anchors.fill: parent
         icon:     root.iconFor(root.activeProfile)
-        label:    "Power Mode"
+        label:    "Power"
         active:   root.activeProfile === "performance"
         expanded: root.expanded
         onToggled:       root.expanded = !root.expanded

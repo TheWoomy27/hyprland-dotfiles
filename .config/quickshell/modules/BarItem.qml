@@ -136,6 +136,30 @@ Item {
     }
 
     Rectangle {
+        anchors {
+            fill: parent
+            margins: -1
+        }
+        z: -0.5
+        radius: 17
+        color: "transparent"
+        border.width: 1
+        border.color: "#801b1e31"
+    }
+
+    Rectangle {
+        anchors {
+            fill: parent
+            margins: -2
+        }
+        z: -1
+        radius: 18
+        color: "transparent"
+        border.width: 1
+        border.color: "#401b1e31"
+    }
+
+    Rectangle {
         id: inner
         anchors {
             fill:    parent

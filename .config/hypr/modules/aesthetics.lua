@@ -244,5 +244,6 @@ hl.config({
         force_default_wallpaper = 0,
         disable_hyprland_logo = false,
         allow_session_lock_restore = true,
+        initial_workspace_tracking = 0
     },
 })

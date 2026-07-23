@@ -73,6 +73,30 @@ PanelWindow {
         }
         width: panelWidth
 
+        Rectangle {
+            anchors {
+                fill: parent
+                margins: -1
+            }
+            z: -0.5
+            radius: 21
+            color: "transparent"
+            border.width: 1
+            border.color: "#801b1e31"
+        }
+
+        Rectangle {
+            anchors {
+                fill: parent
+                margins: -2
+            }
+            z: -1
+            radius: 22
+            color: "transparent"
+            border.width: 1
+            border.color: "#401b1e31"
+        }
+
         // ── Gradient border canvas ────────────────────────────────────────
         Canvas {
             id: borderCanvas
@@ -97,6 +121,22 @@ PanelWindow {
                 ctx.arcTo(0,     0,      width, 0,      r)
                 ctx.closePath()
                 ctx.fill()
+
+                // Keep the border as a ring so the translucent body does not reveal it.
+                var inset = 3
+                var innerR = 17
+                var innerW = width - inset * 2
+                var innerH = height - inset * 2
+                ctx.globalCompositeOperation = "destination-out"
+                ctx.beginPath()
+                ctx.moveTo(inset + innerR, inset)
+                ctx.arcTo(inset + innerW, inset,          inset + innerW, inset + innerH, innerR)
+                ctx.arcTo(inset + innerW, inset + innerH, inset,          inset + innerH, innerR)
+                ctx.arcTo(inset,          inset + innerH, inset,          inset,          innerR)
+                ctx.arcTo(inset,          inset,          inset + innerW, inset,          innerR)
+                ctx.closePath()
+                ctx.fill()
+                ctx.globalCompositeOperation = "source-over"
             }
         }
 
@@ -104,7 +144,7 @@ PanelWindow {
         Rectangle {
             anchors { fill: parent; margins: 3 }
             radius: 17
-            color:  "#222436"
+            color:  "#cc222436"
             clip:   true
 
             Flickable {

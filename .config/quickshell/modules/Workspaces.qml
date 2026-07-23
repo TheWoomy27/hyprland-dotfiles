@@ -13,7 +13,7 @@ BarItem {
 
     property var    screen:     null
     property string screenName: screen ? (screen.name ?? "") : ""
-    property bool   useMoonIndicator: true
+    property bool   useMoonIndicator: false
     property var    workspaceIcons: ({})
     property var    nerdFontIcons: []
     property int    pickerWorkspaceId: -1
@@ -26,7 +26,7 @@ BarItem {
     Component.onCompleted: iconModelSyncTimer.restart()
 
     property var baseIds:  screenName === "DP-5" ? [11, 12, 13, 14, 15] : [1, 2, 3, 4, 5]
-    property var extraIds: screenName === "DP-5" ? [16, 17, 18, 19] : [6, 7, 8, 9]
+    property var extraIds: screenName === "DP-5" ? [16, 17, 18, 19] : [6, 7, 8, 9, 10]
     property var allIds:   baseIds.concat(extraIds)
     readonly property var defaultIconChoices: [
         { name: "clear remove none", icon: "" },

@@ -7,7 +7,9 @@ import Quickshell.Io
 
 BarItem {
     id: root
-    implicitWidth: Math.min(mrow.implicitWidth + 20, maxWidth)
+    // BarItem clips inside a 3px border on both sides; include that inset
+    // in the module width so short labels do not lose their final glyphs.
+    implicitWidth: Math.min(mrow.implicitWidth + 26, maxWidth)
 
     property string activePlayer: ""
     property string artist:   ""

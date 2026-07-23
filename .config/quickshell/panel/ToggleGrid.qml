@@ -18,17 +18,14 @@ Item {
         }
     }
 
-    property bool   nightLightOn:   false
     property bool   dndOn:          false
     property bool   airplaneOn:     false
     property bool   caffeineOn:     false
     property bool   blurOn:         true
     property bool   animationsOn:   true
-    property string nightLightTemp: "3500"
     property string inhibitPid:     ""
 
-    Process { id: nlOn;  command: ["hyprsunset", "-t", root.nightLightTemp]; running: false }
-    Process { id: nlOff; command: ["pkill", "hyprsunset"];                   running: false }
+    NightLightSync { id: nightLight }
     Process {
         id: dndToggle; command: ["swaync-client", "--toggle-dnd"]; running: false
         onRunningChanged: if (!running) dndRead.running = true
@@ -44,13 +41,17 @@ Item {
     Process { id: apOff; command: ["bash", "-c", "nmcli radio wifi on  && bluetoothctl power on"];  running: false }
     Process {
         id: blurToggle
-        command: ["bash", "-c", "hyprctl keyword decoration:blur:enabled " + (root.blurOn ? "false" : "true")]
+        command: ["hyprctl", "eval",
+            "hl.config({ decoration = { blur = { enabled = "
+                + (root.blurOn ? "false" : "true") + " } } })"]
         running: false
         onRunningChanged: if (!running) root.blurOn = !root.blurOn
     }
     Process {
         id: animToggle
-        command: ["bash", "-c", "hyprctl keyword animations:enabled " + (root.animationsOn ? "false" : "true")]
+        command: ["hyprctl", "eval",
+            "hl.config({ animations = { enabled = "
+                + (root.animationsOn ? "false" : "true") + " } })"]
         running: false
         onRunningChanged: if (!running) root.animationsOn = !root.animationsOn
     }
@@ -155,11 +156,8 @@ Item {
                 PowerModeExpander { id: pmEx; Layout.fillWidth: true }
                 Toggle {
                     Layout.fillWidth: true; implicitHeight: 48
-                    icon: ""; label: "Night Light"; active: root.nightLightOn
-                    onClicked: {
-                        root.nightLightOn = !root.nightLightOn
-                        if (root.nightLightOn) nlOn.running = true; else nlOff.running = true
-                    }
+                    icon: ""; label: "Night Light"; active: nightLight.active
+                    onClicked: nightLight.toggle()
                 }
             }
 

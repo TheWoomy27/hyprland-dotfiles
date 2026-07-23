@@ -11,7 +11,11 @@ QtObject {
     required property var screen
     property bool powerMenuOpen: false
     property bool panelOpen:     false
+    readonly property string screenName: screen ? (screen.name ?? "") : ""
+    readonly property bool isVerticalSecondary: screenName === "DP-5"
+    readonly property bool isLaptopDisplay: screenName === "eDP-1"
     signal togglePanel()
+    signal toggleJarvisDashboard()
 
     property var barWindow: PanelWindow {
         screen: root.screen
@@ -22,13 +26,17 @@ QtObject {
         margins {
             top:    5
             bottom: -12
-            left:   20
-            right:  20
+            left:   18
+            right:  18
         }
 
         Item {
             id: barContent
-            anchors.fill: parent
+            anchors {
+                fill: parent
+                leftMargin: 2
+                rightMargin: 2
+            }
 
             // Left: AppLauncher | SystemMonitor | Mpris | Cava
             RowLayout {
@@ -48,7 +56,8 @@ QtObject {
                             + appLauncher.width + leftRow.spacing
                             + systemMonitor.width + leftRow.spacing
                         var cavaSpace = cava.visible ? cava.width + leftRow.spacing : 0
-                        return Math.max(42, workspaces.x - mprisStart - cavaSpace)
+                        return Math.max(42,
+                            workspaces.x - mprisStart - cavaSpace - leftRow.spacing)
                     }
                 }
                 Cava          { id: cava }
@@ -70,19 +79,27 @@ QtObject {
                 }
                 spacing: 8
 
-                WallpaperSwitcher {}
+                JarvisStatus {
+                    visible: !root.isLaptopDisplay
+                    onToggleDashboard: root.toggleJarvisDashboard()
+                }
+                WallpaperSwitcher {
+                    visible: !root.isVerticalSecondary
+                }
                 Wifi        {}
                 Audio       {}
                 Clock       {}
                 Battery     {}
                 PowerMenu {
+                    visible: !root.isVerticalSecondary
                     menuOpen: root.powerMenuOpen
                     onToggleMenu: root.powerMenuOpen = !root.powerMenuOpen
                 }
                 NotifButton {
-                        panelOpen: root.panelOpen
-                        onTogglePanel: root.togglePanel()
-                    }
+                    visible: !root.isVerticalSecondary
+                    panelOpen: root.panelOpen
+                    onTogglePanel: root.togglePanel()
+                }
             }
         }
     }
@@ -90,7 +107,7 @@ QtObject {
     // Power popup
     property var powerPopup: PanelWindow {
         screen:  root.screen
-        visible: root.powerMenuOpen
+        visible: root.powerMenuOpen && !root.isVerticalSecondary
         anchors { top: true; right: true }
         margins { top: 20; right: 20 }
         implicitWidth:  224

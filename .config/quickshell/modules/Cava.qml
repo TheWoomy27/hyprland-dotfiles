@@ -8,7 +8,9 @@ import Quickshell.Io
 Item {
     id: root
     // Full width when visible
-    readonly property int fullWidth: barCount * (barWidth + barSpacing) - barSpacing + 6
+    readonly property int shadowGutter: 2
+    readonly property int contentWidth: barCount * (barWidth + barSpacing) - barSpacing + 6
+    readonly property int fullWidth: contentWidth + shadowGutter * 2
 
     property bool audioPlaying: false
     property bool shouldShow:   false
@@ -36,7 +38,7 @@ Item {
     }
 
     // Animate width: 0 when hidden, fullWidth when shown
-    implicitHeight: 42
+    implicitHeight: 42 + shadowGutter * 2
     implicitWidth: shouldShow ? fullWidth : 0
 
     Behavior on implicitWidth {
@@ -61,7 +63,10 @@ Item {
     // The actual BarItem — fills the animated width
     BarItem {
         id: inner
-        anchors.fill: parent
+        anchors {
+            fill: parent
+            margins: root.shadowGutter
+        }
         hoverable: false
 
         Process {

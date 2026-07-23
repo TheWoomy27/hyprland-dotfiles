@@ -35,6 +35,20 @@
       }
    },
    "providers": {
+      "@sovereign/store.vicinae.awww-switcher": {
+         "preferences": {
+            "wallpaperPath": "~/Pictures/Wallpapers/Moonlight",
+            "colorGenTool": "none",
+            "gridRows": "4",
+            "postProduction": "no",
+            "showImageDetails": true,
+            "toggleVicinaeSetting": true,
+            "transitionDuration": "3",
+            "transitionFPS": "144",
+            "transitionStep": "90",
+            "transitionType": "random"
+         }
+      },
       "applications": {
          "preferences": {
             "defaultAction": "focus",

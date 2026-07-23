@@ -167,6 +167,8 @@ hl.layer_rule({
         namespace = "quickshell",
     },
     animation = "slide up",
+    blur = true,
+    ignore_alpha = 0,
 })
 hl.layer_rule({
     match = {
@@ -218,7 +220,7 @@ hl.workspace_rule({
 })
 hl.workspace_rule({
     workspace = 10,
-    monitor = "DP-5",
+    monitor = "DP-4",
 })
 hl.workspace_rule({
     workspace = 11,
