@@ -79,10 +79,10 @@ QtObject {
                 }
                 spacing: 8
 
-                JarvisStatus {
-                    visible: !root.isLaptopDisplay
-                    onToggleDashboard: root.toggleJarvisDashboard()
-                }
+                // JarvisStatus {
+                //     visible: !root.isLaptopDisplay
+                //     onToggleDashboard: root.toggleJarvisDashboard()
+                // }
                 WallpaperSwitcher {
                     visible: !root.isVerticalSecondary
                 }

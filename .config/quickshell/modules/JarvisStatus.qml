@@ -22,7 +22,7 @@ BarItem {
 
     property string homeDir: Quickshell.env("HOME")
     property string statusPath: homeDir + "/.cache/jarvis-mark-ii/status.json"
-    property string projectDir: homeDir + "/Projects/Jarvis/Mark-II"
+    property string projectDir: homeDir + "/Projects/Jarvis"
 
     property string rawPresence: "offline"
     property string reason: "Runtime unavailable."

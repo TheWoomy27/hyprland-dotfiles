@@ -19,7 +19,7 @@ hl.bind(var_mainMod .. " + SHIFT + P", hl.dsp.exec_cmd(var_preserveSplitOn))
 hl.bind(var_mainMod .. " + ALT + P", hl.dsp.exec_cmd(var_preserveSplitOff))
 hl.bind(var_mainMod .. " + S", hl.dsp.layout("togglesplit"))
 hl.bind(var_mainMod .. " + SHIFT + T", hl.dsp.exec_cmd("grim -g \"$(slurp)\" /tmp/ocr_screenshot.png && tesseract /tmp/ocr_screenshot.png stdout | wl-copy && rm /tmp/ocr_screenshot.png"))
-hl.bind(var_mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("hyprshot -m region"))
+hl.bind(var_mainMod .. " + SHIFT + S", hl.dsp.exec_cmd("hyprshot -m region --freeze"))
 hl.bind(var_mainMod .. " + PRINT", hl.dsp.exec_cmd("hyprshot -m output"))
 hl.bind(var_mainMod .. " + SHIFT + PRINT", hl.dsp.exec_cmd("hyprshot -m window"))
 hl.bind(var_mainMod .. " + ESCAPE", hl.dsp.exec_cmd("pidof " .. var_logoutMenu .. " || " .. var_logoutMenu))
@@ -116,8 +116,8 @@ hl.bind(var_mainMod .. " + ALT + Z", hl.dsp.workspace.toggle_special("minimized"
 hl.bind(var_mainMod .. " + SHIFT + ALT + Z", hl.dsp.window.move({ workspace = "special:minimized" }))
 
 -- Scroll through existing workspaces with mainMod + scroll/bracket
-hl.bind(var_mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e-1" }))
-hl.bind(var_mainMod .. " + mouse_up", hl.dsp.focus({ workspace = "e+1" }))
+hl.bind(var_mainMod .. " + mouse_down", hl.dsp.focus({ workspace = "e+1" }))
+hl.bind(var_mainMod .. " + mouse_up", hl.dsp.focus({ workspace = "e-1" }))
 hl.bind(var_mainMod .. " + bracketleft", hl.dsp.focus({ workspace = "e-1" }))
 hl.bind(var_mainMod .. " + bracketright", hl.dsp.focus({ workspace = "e+1" }))
 

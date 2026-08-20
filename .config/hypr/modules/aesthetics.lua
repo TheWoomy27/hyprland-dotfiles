@@ -14,8 +14,8 @@ hl.config({
     decoration = {
         rounding = 20,
         rounding_power = 3,
-        active_opacity = 0.85,
-        inactive_opacity = 0.85,
+        active_opacity = 1.0,
+        inactive_opacity = 1.0,
         shadow = {
             enabled = false,
             range = 10,
@@ -143,9 +143,9 @@ hl.animation({
 hl.animation({
     leaf = "workspaces",
     enabled = true,
-    speed = 5,
-    bezier = "overshot",
-    style = "slidefade 30%",
+    speed = 3,
+    bezier = "fluent",
+    style = "slidefade 40%",
 })
 hl.animation({
     leaf = "specialWorkspace",
