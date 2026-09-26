@@ -2,7 +2,7 @@
 // Left click: toggle our own ControlPanel
 // Right click: toggle DND
 import QtQuick
-import Quickshell.Io
+import "../services" as Backend
 
 BarItem {
     id: root
@@ -10,46 +10,10 @@ BarItem {
     hoverable: true
 
     property bool panelOpen:   false
-    property int  unreadCount: 0
-    property bool dndActive:   false
+    readonly property int unreadCount: Backend.NotificationService.unreadCount
+    readonly property bool dndActive: Backend.NotificationService.dnd
 
     signal togglePanel()
-
-    Process {
-        id: countProc
-        command: ["swaync-client", "--count"]
-        running: false
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: function(line) {
-                var n = parseInt(line.trim())
-                if (!isNaN(n)) root.unreadCount = n
-            }
-        }
-    }
-
-    Process {
-        id: dndProc
-        command: ["swaync-client", "--get-dnd"]
-        running: false
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: function(line) { root.dndActive = line.trim() === "true" }
-        }
-    }
-
-    Process { id: toggleDnd; command: ["swaync-client", "--toggle-dnd"]; running: false }
-
-    Timer {
-        interval: 5000
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: {
-            countProc.running = true
-            dndProc.running   = true
-        }
-    }
 
     MouseArea {
         anchors.fill: parent
@@ -57,7 +21,7 @@ BarItem {
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         onClicked: function(m) {
             if (m.button === Qt.LeftButton) root.togglePanel()
-            else                            toggleDnd.running = true
+            else                            Backend.NotificationService.toggleDnd()
         }
     }
 

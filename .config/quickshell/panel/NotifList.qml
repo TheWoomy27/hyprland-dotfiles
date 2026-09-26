@@ -2,19 +2,14 @@
 import QtQuick
 import QtQuick.Layouts
 import Quickshell.Services.Notifications
+import "../services" as Backend
 
 Item {
     id: root
     implicitWidth:  parent ? parent.width : 380
     implicitHeight: col.implicitHeight
 
-    readonly property var notifs: {
-        var s = NotificationServer.trackedNotifications
-        if (!s) return []
-        var v = s.values
-        if (!v) return []
-        return v
-    }
+    readonly property var notifs: Backend.NotificationService.notifications
 
     Column {
         id: col
@@ -67,8 +62,7 @@ Item {
                     hoverEnabled: true
                     cursorShape:  Qt.PointingHandCursor
                     onClicked: {
-                        var n = root.notifs
-                        for (var i = 0; i < n.length; i++) n[i].expire()
+                        Backend.NotificationService.clear()
                     }
                 }
             }

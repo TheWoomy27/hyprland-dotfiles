@@ -26,5 +26,6 @@ hl.config({
     misc = {
         animate_manual_resizes = true,
         animate_mouse_windowdragging = true,
+        vrr = 1,
     },
 })

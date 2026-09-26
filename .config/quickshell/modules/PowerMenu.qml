@@ -1,7 +1,7 @@
 // modules/PowerMenu.qml
 // Left click: wlogout  Right click: toggle quickshell popup
 import QtQuick
-import Quickshell.Io
+import "../services" as Backend
 
 BarItem {
     id: root
@@ -11,14 +11,12 @@ BarItem {
     signal toggleMenu()
     property bool menuOpen: false
 
-    Process { id: wlogoutProc; command: ["wlogout"]; running: false }
-
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         cursorShape: Qt.PointingHandCursor
         onClicked: function(m) {
-            if (m.button === Qt.LeftButton) wlogoutProc.running = true
+            if (m.button === Qt.LeftButton) Backend.ActionService.openPowerMenu()
             else root.toggleMenu()
         }
     }

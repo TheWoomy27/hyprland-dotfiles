@@ -1,8 +1,8 @@
 // JarvisDashboard.qml
 import Quickshell
-import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
+import "services" as Backend
 
 PanelWindow {
     id: root
@@ -19,42 +19,56 @@ PanelWindow {
     color: "transparent"
     exclusionMode: ExclusionMode.Ignore
 
-    property string homeDir: Quickshell.env("HOME")
-    property string statusPath: homeDir + "/.cache/jarvis-mark-ii/status.json"
-    property string projectDir: homeDir + "/Projects/Jarvis"
+    readonly property var jarvis: Backend.JarvisService
+    property bool streamClaimed: false
 
-    property string rawPresence: "offline"
-    property string reason: "Runtime unavailable."
-    property string updatedAt: ""
-    property string currentTask: ""
-    property var context: ({})
-    property var services: ({})
-    property var perception: ({})
-    property bool listening: false
-    property bool speaking: false
-    property bool streamStale: false
-    property real clockMs: 0
-    property real wakeUntilMs: 0
-    readonly property bool wakeActive: listening || clockMs < wakeUntilMs
-    property var activeJobs: ({})
-    property int activeJobCount: 0
-    property string activeJobLabel: "CLEAR"
-    property string activeJobPrompt: ""
-    property int mobileDeviceCount: 0
-    property string mobileDeviceLabel: "UNPAIRED"
-    property var pendingApprovals: []
-    property var activityToday: []
-    property int pendingMemories: 0
-    property var memoryReview: ({})
-    property var initiative: ({})
-    property int watchingCount: 0
-    property int queuedCount: 0
+    readonly property bool runtimeAvailable: jarvis.runtimeAvailable
+    readonly property string rawPresence: jarvis.rawPresence
+    readonly property string reason: jarvis.reason
+    readonly property string updatedAt: jarvis.updatedAt
+    readonly property string currentTask: jarvis.currentTask
+    readonly property var context: jarvis.context
+    readonly property var services: jarvis.services
+    readonly property var perception: jarvis.perception
+    readonly property bool listening: jarvis.listening
+    readonly property bool speaking: jarvis.speaking
+    readonly property bool streamStale: jarvis.streamStale
+    readonly property real clockMs: jarvis.clockMs
+    readonly property real wakeUntilMs: jarvis.wakeUntilMs
+    readonly property bool wakeActive: jarvis.wakeActive
+    readonly property var activeJobs: jarvis.activeJobs
+    readonly property int activeJobCount: jarvis.activeJobCount
+    readonly property string activeJobLabel: jarvis.activeJobLabel
+    readonly property string activeJobPrompt: jarvis.activeJobPrompt
+    readonly property int mobileDeviceCount: jarvis.mobileDeviceCount
+    readonly property string mobileDeviceLabel: jarvis.mobileDeviceLabel
+    readonly property var pendingApprovals: jarvis.pendingApprovals
+    readonly property var activityToday: jarvis.activityToday
+    readonly property int pendingMemories: jarvis.pendingMemories
+    readonly property var memoryReview: jarvis.memoryReview
+    readonly property var initiative: jarvis.initiative
+    readonly property int watchingCount: jarvis.watchingCount
+    readonly property int queuedCount: jarvis.queuedCount
 
-    readonly property bool stale: {
-        var stamp = Date.parse(updatedAt)
-        return streamStale || isNaN(stamp) || clockMs - stamp > 15000
+    function reconcileStreamClaim() {
+        if (open && !streamClaimed) {
+            jarvis.acquireStream()
+            streamClaimed = true
+        } else if (!open && streamClaimed) {
+            jarvis.releaseStream()
+            streamClaimed = false
+        }
     }
-    readonly property string effectivePresence: stale ? "offline" : rawPresence
+
+    onOpenChanged: reconcileStreamClaim()
+    Component.onCompleted: reconcileStreamClaim()
+    Component.onDestruction: {
+        if (streamClaimed)
+            jarvis.releaseStream()
+    }
+
+    readonly property bool stale: jarvis.stale
+    readonly property string effectivePresence: jarvis.effectivePresence
     readonly property color stateColor: {
         if (effectivePresence === "active") return "#7cafff"
         if (effectivePresence === "speaking") return "#82f7bd"
@@ -68,28 +82,8 @@ PanelWindow {
     readonly property string quietReason: context.call_active ? "Mobile or voice call detected."
                                        : (context.gaming ? "Game detected."
                                        : (context.locked ? "Hyprlock active." : "No quiet-mode trigger."))
-    readonly property bool ambientEnabled: perception.ambient_enabled === true
-    readonly property string screenMode: perception.screen_mode || "off"
-
-    function syncStatus() {
-        rawPresence = statusStore.presence || "offline"
-        reason = statusStore.reason || "Runtime unavailable."
-        updatedAt = statusStore.updated_at || ""
-        currentTask = statusStore.current_task || ""
-        context = statusStore.context || ({})
-        services = statusStore.services || ({})
-        perception = statusStore.perception || ({})
-        listening = statusStore.listening === true
-        speaking = statusStore.speaking === true
-        pendingApprovals = statusStore.pending_approvals || []
-        activityToday = statusStore.activity_today || []
-        pendingMemories = statusStore.pending_memories || 0
-        memoryReview = statusStore.memory_review || ({})
-        initiative = statusStore.initiative || ({})
-        watchingCount = initiative.watching || 0
-        queuedCount = initiative.queued || 0
-        clockMs = Date.now()
-    }
+    readonly property bool ambientEnabled: jarvis.ambientEnabled
+    readonly property string screenMode: jarvis.screenMode
 
     function activityTime(row) {
         if (!row || !row.span_end)
@@ -106,84 +100,16 @@ PanelWindow {
         return row.apps.slice(0, 2).join(", ")
     }
 
-    function eventStamp(event) {
-        if (event && event.ts)
-            return new Date(event.ts * 1000).toISOString()
-        return new Date().toISOString()
-    }
-
-    function derivedPresence() {
-        if (speaking)
-            return "speaking"
-        if (context.locked)
-            return "asleep"
-        if (context.call_active || context.gaming)
-            return "muted"
-        return "active"
-    }
-
     function runControl(operation) {
-        if (operation !== "wake" && operation !== "mute" && operation !== "sleep")
-            return
-        if (controlProc.running)
-            return
-        controlProc.operation = operation
-        controlProc.command = [
-            "bash",
-            "-lc",
-            "cd " + root.projectDir + " && ./.venv/bin/jarvis control " + operation + " >/dev/null"
-        ]
-        controlProc.running = true
+        jarvis.runControl(operation)
     }
 
     function resolveApproval(approvalId, approve) {
-        if (!approvalId || approvalProc.running)
-            return
-        approvalProc.command = [
-            "bash",
-            "-lc",
-            "cd " + root.projectDir + " && ./.venv/bin/jarvis " + (approve ? "approve " : "deny ") + approvalId + " >/dev/null"
-        ]
-        approvalProc.running = true
+        jarvis.resolveApproval(approvalId, approve)
     }
 
     function resolveMemory(memoryId, confirm) {
-        if (!memoryId || memoryProc.running)
-            return
-        memoryProc.command = [
-            "bash",
-            "-lc",
-            "cd " + root.projectDir + " && ./.venv/bin/jarvis memories " + (confirm ? "confirm " : "reject ") + memoryId + " >/dev/null"
-        ]
-        memoryProc.running = true
-    }
-
-    function upsertApproval(data) {
-        if (!data || !data.approval_id)
-            return
-        var approvals = []
-        for (var i = 0; i < pendingApprovals.length; i++) {
-            if (pendingApprovals[i].id !== data.approval_id)
-                approvals.push(pendingApprovals[i])
-        }
-        approvals.unshift({
-            "id": data.approval_id,
-            "summary": data.summary || "Approval required.",
-            "risk": data.risk || "unknown",
-            "expires_at": data.expires_at || ""
-        })
-        pendingApprovals = approvals
-    }
-
-    function removeApproval(data) {
-        if (!data || !data.approval_id)
-            return
-        var approvals = []
-        for (var i = 0; i < pendingApprovals.length; i++) {
-            if (pendingApprovals[i].id !== data.approval_id)
-                approvals.push(pendingApprovals[i])
-        }
-        pendingApprovals = approvals
+        jarvis.resolveMemory(memoryId, confirm)
     }
 
     function serviceState(service) {
@@ -197,20 +123,6 @@ PanelWindow {
         return "#ff7a7a"
     }
 
-    function applyHealthEvent(data) {
-        if (!data || !data.service)
-            return
-        var service = String(data.service).toLowerCase()
-        if (service !== "voice" && service !== "core" && service !== "agents" && service !== "perception")
-            return
-        var next = {}
-        var keys = Object.keys(services)
-        for (var i = 0; i < keys.length; i++)
-            next[keys[i]] = services[keys[i]]
-        next[service] = data.ok === true ? "ok" : "down"
-        services = next
-    }
-
     function privacyColor(kind) {
         if (stale || serviceState("perception") === "down") return "#ff7a7a"
         if (serviceState("perception") === "stale") return "#f8c46a"
@@ -221,202 +133,6 @@ PanelWindow {
     function privacyLabel(kind) {
         if (kind === "ears") return ambientEnabled ? "ON" : "OFF"
         return screenMode.toUpperCase()
-    }
-
-    function refreshActiveJobs() {
-        var active = []
-        var keys = Object.keys(activeJobs)
-        for (var i = 0; i < keys.length; i++) {
-            var job = activeJobs[keys[i]]
-            if (job.status === "running" || job.status === "queued")
-                active.push(job)
-        }
-        activeJobCount = active.length
-        if (active.length > 0) {
-            var job = active[0]
-            activeJobLabel = ((job.adapter || "worker") + " • " + (job.status || "active")).toUpperCase()
-            activeJobPrompt = job.prompt_summary || job.prompt || ""
-        } else {
-            activeJobLabel = "CLEAR"
-            activeJobPrompt = ""
-        }
-    }
-
-    function applyAgentEvent(type, data) {
-        if (!data || !data.job_id)
-            return
-        var jobs = {}
-        var keys = Object.keys(activeJobs)
-        for (var i = 0; i < keys.length; i++)
-            jobs[keys[i]] = activeJobs[keys[i]]
-        if (type === "agent.job.completed" || type === "agent.job.failed"
-                || data.status === "succeeded" || data.status === "failed" || data.status === "blocked") {
-            delete jobs[data.job_id]
-        } else {
-            jobs[data.job_id] = data
-        }
-        activeJobs = jobs
-        refreshActiveJobs()
-    }
-
-    function applyBusEvent(line) {
-        if (!line || !line.length)
-            return
-        try {
-            var event = JSON.parse(line)
-            var data = event.data || {}
-            root.streamStale = false
-            root.clockMs = Date.now()
-            if (event.type === "context.changed") {
-                root.context = {
-                    "locked": data.locked === true,
-                    "call_active": data.call_active === true,
-                    "gaming": data.gaming === true,
-                    "active_window": data.active_window || "",
-                    "active_class": data.active_class || ""
-                }
-                root.rawPresence = data.presence || root.derivedPresence()
-                root.reason = "Runtime telemetry live."
-                root.updatedAt = root.eventStamp(event)
-            } else if (event.type === "voice.wake") {
-                root.wakeUntilMs = Date.now() + 6000
-                root.updatedAt = root.eventStamp(event)
-            } else if (event.type === "speech.playback.started") {
-                root.speaking = true
-                root.wakeUntilMs = 0
-                root.rawPresence = "speaking"
-                root.updatedAt = root.eventStamp(event)
-            } else if (event.type === "speech.playback.finished") {
-                root.speaking = false
-                root.rawPresence = root.derivedPresence()
-                root.updatedAt = root.eventStamp(event)
-            } else if (event.type === "approval.requested") {
-                root.upsertApproval(data)
-            } else if (event.type === "approval.resolved") {
-                root.removeApproval(data)
-            } else if (event.type.indexOf("agent.job.") === 0) {
-                root.applyAgentEvent(event.type, data)
-            } else if (event.type === "health.heartbeat") {
-                root.applyHealthEvent(data)
-            } else if (event.type === "ambient.state") {
-                var ambient = {}
-                var perceptionKeys = Object.keys(root.perception)
-                for (var p = 0; p < perceptionKeys.length; p++)
-                    ambient[perceptionKeys[p]] = root.perception[perceptionKeys[p]]
-                ambient.ambient_enabled = data.enabled === true
-                ambient.ambient_reason = data.reason || ""
-                root.perception = ambient
-            } else if (event.type === "screen.mode") {
-                var screen = {}
-                var screenKeys = Object.keys(root.perception)
-                for (var s = 0; s < screenKeys.length; s++)
-                    screen[screenKeys[s]] = root.perception[screenKeys[s]]
-                screen.screen_mode = data.mode || "off"
-                root.perception = screen
-            }
-        } catch (_) {
-        }
-    }
-
-    FileView {
-        id: statusFile
-        path: root.statusPath
-        preload: true
-        blockLoading: true
-        watchChanges: true
-        printErrors: false
-
-        JsonAdapter {
-            id: statusStore
-            property string presence: "offline"
-            property string reason: "Runtime unavailable."
-            property string updated_at: ""
-            property string current_task: ""
-            property var context: ({})
-            property var services: ({})
-            property var perception: ({})
-            property bool listening: false
-            property bool speaking: false
-            property var pending_approvals: []
-            property var activity_today: []
-            property int pending_memories: 0
-            property var memory_review: ({})
-            property var initiative: ({})
-        }
-
-        onLoaded: root.syncStatus()
-        onAdapterUpdated: root.syncStatus()
-        onLoadFailed: {
-            root.rawPresence = "offline"
-            root.reason = "Runtime unavailable."
-            root.updatedAt = ""
-            root.currentTask = ""
-            root.context = ({})
-            root.services = ({})
-            root.perception = ({})
-            root.listening = false
-            root.speaking = false
-            root.pendingApprovals = []
-            root.activityToday = []
-            root.pendingMemories = 0
-            root.memoryReview = ({})
-            root.initiative = ({})
-            root.watchingCount = 0
-            root.queuedCount = 0
-            root.clockMs = Date.now()
-        }
-    }
-
-    Timer {
-        interval: 1000
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: root.clockMs = Date.now()
-    }
-
-    Process {
-        id: controlProc
-        running: false
-        property string operation: ""
-    }
-
-    Process {
-        id: approvalProc
-        running: false
-    }
-
-    Process {
-        id: memoryProc
-        running: false
-    }
-
-    Process {
-        id: busStream
-        command: [root.projectDir + "/.venv/bin/jarvis", "stream", "--filter", "context.,approval.,agent.,speech.,health.,ambient.,screen.,voice.wake"]
-        running: true
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: function(line) { root.applyBusEvent(line) }
-        }
-        onRunningChanged: {
-            if (running) {
-                root.streamStale = false
-                return
-            }
-            root.streamStale = true
-            streamRestartTimer.restart()
-        }
-    }
-
-    Timer {
-        id: streamRestartTimer
-        interval: 2000
-        repeat: false
-        onTriggered: {
-            if (!busStream.running)
-                busStream.running = true
-        }
     }
 
     Rectangle {

@@ -2,6 +2,18 @@ source /usr/share/cachyos-fish-config/cachyos-config.fish
 source ~/.config/fish/desktop.fish
 source ~/.config/fish/laptop.fish
 
+# Adapt Fastfetch to the available terminal width. The CachyOS default greeting
+# always places the ASCII logo beside the module output, which wraps in tiles.
+function fish_greeting
+    if test "$COLUMNS" -ge 130
+        fastfetch
+    else if test "$COLUMNS" -ge 90
+        fastfetch --logo-position top
+    else
+        fastfetch --logo none
+    end
+end
+
 alias hyprlockfix="hyprctl --instance 0 'keyword misc:allow_session_lock_restore 1' && hyprctl --instance 0 'dispatch exec hyprlock'"
 alias dotfiles='/usr/bin/git --git-dir=$HOME/.dotfiles/ --work-tree=$HOME'
 alias cmatrix='cmatrix -C blue'

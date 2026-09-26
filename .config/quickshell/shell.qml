@@ -1,9 +1,16 @@
 // shell.qml
+pragma ComponentBehavior: Bound
+
 import Quickshell
 import QtQuick
+import qs.bezel
 import "."
 
 ShellRoot {
+    id: shell
+
+    property bool jarvisModeNotificationsEnabled: false
+
     Variants {
         model: Quickshell.screens
         delegate: QtObject {
@@ -20,21 +27,39 @@ ShellRoot {
                 onToggleJarvisDashboard: delegate.jarvisOpen = !delegate.jarvisOpen
             }
 
-            property var panel: ControlPanel {
-                screen: delegate.modelData
-                open:   delegate.panelOpen
-                onDismissRequested: delegate.panelOpen = false
+            property var panelLoader: LazyLoader {
+                activeAsync: delegate.panelOpen
+
+                ControlPanel {
+                    screen: delegate.modelData
+                    open: true
+                    onDismissRequested: delegate.panelOpen = false
+                }
             }
 
-            property var jarvisDashboard: JarvisDashboard {
-                screen: delegate.modelData
-                open:   delegate.jarvisOpen
-                onDismissRequested: delegate.jarvisOpen = false
+            property var jarvisDashboardLoader: LazyLoader {
+                activeAsync: delegate.jarvisOpen
+
+                JarvisDashboard {
+                    screen: delegate.modelData
+                    open: true
+                    onDismissRequested: delegate.jarvisOpen = false
+                }
             }
 
-            property var jarvisCallOverlay: JarvisCallOverlay {
-                screen: delegate.modelData
+            property var jarvisCallOverlayLoader: LazyLoader {
+                active: shell.jarvisModeNotificationsEnabled
+
+                JarvisCallOverlay {
+                    screen: delegate.modelData
+                    modeNotificationsEnabled: true
+                }
             }
+
+            property var screenCorners: ScreenCorners {
+                modelData: delegate.modelData
+            }
+
         }
     }
 }

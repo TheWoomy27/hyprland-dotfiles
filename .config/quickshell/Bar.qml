@@ -1,10 +1,12 @@
 // Bar.qml
+pragma ComponentBehavior: Bound
+
 import Quickshell
 import Quickshell.Hyprland
-import Quickshell.Io
 import QtQuick
 import QtQuick.Layouts
 import "modules"
+import "services" as Backend
 
 QtObject {
     id: root
@@ -105,9 +107,12 @@ QtObject {
     }
 
     // Power popup
-    property var powerPopup: PanelWindow {
+    property var powerPopupLoader: LazyLoader {
+        activeAsync: root.powerMenuOpen && !root.isVerticalSecondary
+
+    PanelWindow {
         screen:  root.screen
-        visible: root.powerMenuOpen && !root.isVerticalSecondary
+        visible: true
         anchors { top: true; right: true }
         margins { top: 20; right: 20 }
         implicitWidth:  224
@@ -198,8 +203,6 @@ QtObject {
                 }
             }
 
-            Process { id: ap; command: cmd; running: false }
-
             MouseArea {
                 id: area
                 anchors.fill: parent
@@ -207,9 +210,10 @@ QtObject {
                 cursorShape:  Qt.PointingHandCursor
                 onClicked: {
                     root.powerMenuOpen = false
-                    ap.running = true
+                    Backend.ActionService.run(cmd)
                 }
             }
         }
+    }
     }
 }

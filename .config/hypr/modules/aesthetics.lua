@@ -5,7 +5,11 @@ hl.config({
                 colors = {"rgba(3b63cfff)", "rgba(7cafffff)"},
                 angle = 225,
             },
-            inactive_border = "rgba(5A617Daa)",
+            --inactive_border = "rgba(5A617Daa)",
+            inactive_border = {
+                colors = {"rgba(1e20308f)", "rgba(c8d3f5aa)", "rgba(1e20308f)"},
+                angle = 150,
+            },
         },
         resize_on_border = true,
         allow_tearing = false,

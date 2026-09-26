@@ -1,10 +1,10 @@
 // ControlPanel.qml
 import Quickshell
 import Quickshell.Io
-import Quickshell.Services.Notifications
 import QtQuick
 import QtQuick.Layouts
 import "panel"
+import "services" as Backend
 
 PanelWindow {
     id: root
@@ -20,39 +20,6 @@ PanelWindow {
     exclusionMode: ExclusionMode.Ignore
 
     readonly property int panelWidth: 390
-
-    // ── Player list — only update model when list actually changes ───────────
-    property var _players:      []
-    property var _knownPlayers: []
-
-    Process {
-        id: listProc
-        command: ["playerctl", "--list-all"]
-        running: false
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: function(line) {
-                var n = line.trim()
-                if (n) root._knownPlayers = root._knownPlayers.concat([n])
-            }
-        }
-        onRunningChanged: {
-            if (!running) {
-                var a = root._knownPlayers.slice().sort().join(",")
-                var b = root._players.slice().sort().join(",")
-                if (a !== b) root._players = root._knownPlayers.slice()
-                root._knownPlayers = []
-            }
-        }
-    }
-
-    Timer {
-        interval: 1000
-        running: true; repeat: true; triggeredOnStart: true
-        onTriggered: { root._knownPlayers = []; listProc.running = true }
-    }
-
-    NotificationServer { keepOnReload: true }
 
     // ── Click outside ─────────────────────────────────────────────────────
     MouseArea {
@@ -191,11 +158,11 @@ PanelWindow {
 
                         Repeater {
                             id: mediaRep
-                            model: root._players
+                            model: Backend.MediaService.players
                             delegate: MediaCard {
                                 required property var modelData
-                                width:      parent.width
-                                playerName: modelData
+                                width: parent.width
+                                player: modelData
                             }
                         }
 

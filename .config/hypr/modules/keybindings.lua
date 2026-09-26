@@ -1,10 +1,9 @@
+-- ##################
+-- ## KEYBINDINGS ###
+-- ##################
+
 local var_mainMod = "SUPER"
 
--- ##################
-
--- ## KEYBINDINGS ###
-
--- ##################
 require("modules.variables")
 
 -- https://wiki.hypr.land/Configuring/Keywords/
@@ -51,8 +50,16 @@ hl.bind(var_mainMod .. " + W", hl.dsp.exec_cmd("pidof waypaper || waypaper"))
 hl.bind(var_mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("~/.config/waybar/scripts/launch.sh"))
 hl.bind(var_mainMod .. " + SHIFT + Q", hl.dsp.exec_cmd("~/.config/quickshell/scripts/launch.sh"))
 hl.bind(var_mainMod .. " + SHIFT + O", hl.dsp.exec_cmd("killall -9 openrgb && openrgb"))
-hl.bind(var_mainMod .. " + equal", hl.dsp.exec_cmd("hyprctl -q keyword cursor:zoom_factor $(hyprctl getoption cursor:zoom_factor -j | jq '.float * 1.1')"))
-hl.bind(var_mainMod .. " + minus", hl.dsp.exec_cmd("hyprctl -q keyword cursor:zoom_factor $(hyprctl getoption cursor:zoom_factor -j | jq '(.float * 0.9) | if . < 1 then 1 else . end')"))
+local function adjust_zoom(factor)
+    local current = hl.get_config("cursor.zoom_factor")
+    hl.config({ cursor = { zoom_factor = math.max(1, current * factor) } })
+end
+hl.bind(var_mainMod .. " + equal", function()
+    adjust_zoom(1.1)
+end)
+hl.bind(var_mainMod .. " + minus", function()
+    adjust_zoom(0.9)
+end)
 
 -- Move focus with mainMod + arrow keys
 hl.bind(var_mainMod .. " + left", hl.dsp.focus({ direction = "left" }))

@@ -655,7 +655,7 @@
       "browser-extension": {
          "entrypoints": {
             "browse-tabs": {
-               "enabled": false
+               "enabled": true
             }
          }
       },

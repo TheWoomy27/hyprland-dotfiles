@@ -1,55 +1,16 @@
 // panel/TopBar.qml — buttons with hover gradient rotation animation
 import QtQuick
 import QtQuick.Layouts
-import Quickshell.Io
+import "../services" as Backend
 
 Item {
     id: root
     implicitHeight: 52
     implicitWidth:  parent ? parent.width : 380
 
-    property bool   hasBattery:  false
-    property int    batPercent:  0
-    property bool   batCharging: false
-
-    Process {
-        id: batDetect
-        command: ["bash", "-c",
-            "ls /sys/class/power_supply/ 2>/dev/null | grep -iE '^BAT|^battery' | head -1"]
-        running: true
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: function(line) {
-                root.hasBattery = line.trim().length > 0
-                if (root.hasBattery) batRead.running = true
-            }
-        }
-    }
-
-    Process {
-        id: batRead
-        command: ["bash", "-c",
-            "bat=$(ls /sys/class/power_supply/ | grep -iE '^BAT|^battery' | head -1);" +
-            "echo $(cat /sys/class/power_supply/$bat/capacity 2>/dev/null):$(cat /sys/class/power_supply/$bat/status 2>/dev/null)"]
-        running: false
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: function(line) {
-                var p = line.trim().split(":")
-                if (p.length >= 2) {
-                    root.batPercent  = parseInt(p[0]) || 0
-                    root.batCharging = p[1].trim() === "Charging"
-                }
-            }
-        }
-    }
-
-    Timer { interval: 30000; running: root.hasBattery; repeat: true
-            onTriggered: batRead.running = true }
-
-    Process { id: settingsProc;  command: ["hyprctl", "dispatch", "hl.dsp.exec_cmd(\"[workspace special:magic silent] kitty --class hyprmod hyprmod\")"];  running: false }
-    Process { id: lockProc;  command: ["hyprlock"];  running: false }
-    Process { id: powerProc; command: ["wlogout"];   running: false }
+    readonly property bool hasBattery: Backend.BatteryService.available
+    readonly property int batPercent: Backend.BatteryService.percent
+    readonly property bool batCharging: Backend.BatteryService.charging
 
     function batIcon() {
         if (root.batCharging)      return "\uf0e7"
@@ -118,9 +79,9 @@ Item {
         anchors { right: parent.right; verticalCenter: parent.verticalCenter }
         spacing: 10
 
-        TopBarBtn { icon: "";       onClicked: settingsProc.running = true }
-        TopBarBtn { icon: ""; onClicked: lockProc.running = true }
-        TopBarBtn { icon: ""; dangerColor: true; onClicked: powerProc.running = true }
+        TopBarBtn { icon: ""; onClicked: Backend.ActionService.openHyprmod() }
+        TopBarBtn { icon: ""; onClicked: Backend.ActionService.lockSession() }
+        TopBarBtn { icon: ""; dangerColor: true; onClicked: Backend.ActionService.openPowerMenu() }
     }
 
     component TopBarBtn: Item {

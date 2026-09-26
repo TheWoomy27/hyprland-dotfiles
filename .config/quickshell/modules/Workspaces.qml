@@ -5,7 +5,7 @@ import QtQuick
 import QtQuick.Layouts
 import Quickshell
 import Quickshell.Hyprland
-import Quickshell.Io
+import "../services" as Backend
 
 BarItem {
     id: root
@@ -14,16 +14,20 @@ BarItem {
     property var    screen:     null
     property string screenName: screen ? (screen.name ?? "") : ""
     property bool   useMoonIndicator: false
-    property var    workspaceIcons: ({})
-    property var    nerdFontIcons: []
+    readonly property var workspaceIcons: Backend.WorkspaceIconService.workspaceIcons
+    readonly property var nerdFontIcons: Backend.WorkspaceIconService.nerdFontIcons
     property int    pickerWorkspaceId: -1
     property bool   pickerOpen: false
     property string iconSearch: ""
 
-    onIconSearchChanged: iconModelSyncTimer.restart()
-    onNerdFontIconsChanged: iconModelSyncTimer.restart()
-
-    Component.onCompleted: iconModelSyncTimer.restart()
+    onIconSearchChanged: {
+        if (pickerOpen)
+            iconModelSyncTimer.restart()
+    }
+    onNerdFontIconsChanged: {
+        if (pickerOpen)
+            iconModelSyncTimer.restart()
+    }
 
     property var baseIds:  screenName === "DP-5" ? [11, 12, 13, 14, 15] : [1, 2, 3, 4, 5]
     property var extraIds: screenName === "DP-5" ? [16, 17, 18, 19] : [6, 7, 8, 9, 10]
@@ -101,69 +105,22 @@ BarItem {
         return wsRow.x + item.x + (item.width - moonSize) / 2
     }
 
-    FileView {
-        id: iconFile
-        path: "/home/austin/.config/quickshell/workspace-icons.json"
-        preload: true
-        blockLoading: true
-        watchChanges: true
-        printErrors: false
-
-        JsonAdapter {
-            id: iconStore
-            property var icons: ({})
-        }
-
-        onLoaded: root.workspaceIcons = iconStore.icons || ({})
-        onAdapterUpdated: root.workspaceIcons = iconStore.icons || ({})
-        onLoadFailed: root.workspaceIcons = ({})
-    }
-
-    FileView {
-        id: nerdFontFile
-        path: "/home/austin/.config/quickshell/nerd-font-icons.json"
-        preload: true
-        blockLoading: true
-        printErrors: false
-
-        JsonAdapter {
-            id: nerdFontStore
-            property var icons: []
-        }
-
-        onLoaded: root.nerdFontIcons = nerdFontStore.icons || []
-        onAdapterUpdated: root.nerdFontIcons = nerdFontStore.icons || []
-        onLoadFailed: root.nerdFontIcons = []
-    }
-
     function workspaceIcon(wsId) {
         var icon = workspaceIcons[wsId.toString()]
         return icon === undefined || icon === null ? "" : icon
     }
 
     function setWorkspaceIcon(wsId, icon) {
-        var key = wsId.toString()
-        var next = {}
-        for (var k in workspaceIcons)
-            next[k] = workspaceIcons[k]
-
-        if (icon === "")
-            delete next[key]
-        else
-            next[key] = icon
-
-        workspaceIcons = next
-        iconStore.icons = next
-        iconFile.writeAdapter()
+        Backend.WorkspaceIconService.setWorkspaceIcon(wsId, icon)
         pickerOpen = false
     }
 
     function openIconPicker(wsId) {
         pickerWorkspaceId = wsId
         iconSearch = ""
+        Backend.WorkspaceIconService.requestCatalog()
         syncIconModel()
         pickerOpen = true
-        focusSearchTimer.restart()
     }
 
     function iconChoiceKey(item) {
@@ -248,12 +205,6 @@ BarItem {
         onTriggered: root.syncIconModel()
     }
 
-    Timer {
-        id: focusSearchTimer
-        interval: 40
-        onTriggered: searchInput.forceActiveFocus()
-    }
-
     // Count windows per workspace directly from toplevels — fully reactive,
     // updates whenever any window opens, closes, or moves.
     readonly property var occupiedMap: {
@@ -334,10 +285,14 @@ BarItem {
         }
     }
 
+    LazyLoader {
+        id: pickerLoader
+        activeAsync: root.pickerOpen
+
     PanelWindow {
         id: pickerWindow
         screen: root.screen
-        visible: root.pickerOpen
+        visible: true
         anchors { top: true; left: true; right: true }
         margins { top: 20; left: 20; right: 20 }
         implicitHeight: 410
@@ -346,6 +301,12 @@ BarItem {
         color: "transparent"
         focusable: true
         aboveWindows: true
+
+        Timer {
+            interval: 40
+            running: true
+            onTriggered: searchInput.forceActiveFocus()
+        }
 
         MouseArea {
             anchors.fill: parent
@@ -709,6 +670,7 @@ BarItem {
             }
         }
     }
+    }
 
     component WsButton: Item {
         id: btn
@@ -853,14 +815,9 @@ BarItem {
                 if (mouse.button === Qt.RightButton)
                     root.openIconPicker(btn.wsId)
                 else
-                    switchWorkspace.running = true
+                    Backend.ActionService.focusWorkspace(btn.wsId)
             }
         }
 
-        Process {
-            id: switchWorkspace
-            command: ["hyprctl", "dispatch", "hl.dsp.focus({ workspace = " + btn.wsId.toString() + " })"]
-            running: false
-        }
     }
 }

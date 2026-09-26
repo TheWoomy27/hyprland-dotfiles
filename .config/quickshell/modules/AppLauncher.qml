@@ -2,23 +2,20 @@
 // Left click: vicinae toggle
 // Right click: wofi --show drun
 import QtQuick
-import Quickshell.Io
+import "../services" as Backend
 
 BarItem {
     id: root
     implicitWidth: 42
     hoverable: true
 
-    Process { id: leftProc;  command: ["vicinae", "toggle"]; running: false }
-    Process { id: rightProc; command: ["wofi", "--show", "drun"]; running: false }
-
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         cursorShape: Qt.PointingHandCursor
         onClicked: function(m) {
-            if (m.button === Qt.LeftButton) leftProc.running = true
-            else                            rightProc.running = true
+            if (m.button === Qt.LeftButton) Backend.ActionService.launchVicinae()
+            else                            Backend.ActionService.launchWofi()
         }
     }
 

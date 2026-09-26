@@ -1,0 +1,375 @@
+// panel/ToggleGrid.qml
+// Dropdowns escape the RowLayout and span full width below each header row.
+import QtQuick
+import QtQuick.Layouts
+import Quickshell.Io
+import "../services" as Backend
+
+Item {
+    id: root
+    implicitWidth:  parent ? parent.width : 380
+    implicitHeight: mainCol.implicitHeight
+
+    property bool panelOpen: true
+    property bool nightLightClaimed: false
+    onPanelOpenChanged: {
+        if (!panelOpen) {
+            wifiEx.expanded  = false
+            btEx.expanded    = false
+            pmEx.expanded    = false
+        }
+        reconcileNightLightClaim()
+    }
+
+    readonly property bool dndOn: Backend.NotificationService.dnd
+    readonly property bool airplaneOn: !Backend.NetworkService.wifiEnabled
+                                         && (!Backend.BluetoothService.available
+                                             || !Backend.BluetoothService.enabled)
+    property bool   blurOn:         true
+    property bool   animationsOn:   true
+
+    function reconcileNightLightClaim() {
+        if (panelOpen && !nightLightClaimed) {
+            Backend.NightLightService.acquireMonitor()
+            nightLightClaimed = true
+        } else if (!panelOpen && nightLightClaimed) {
+            Backend.NightLightService.releaseMonitor()
+            nightLightClaimed = false
+        }
+    }
+
+    Component.onCompleted: reconcileNightLightClaim()
+    Component.onDestruction: {
+        if (nightLightClaimed)
+            Backend.NightLightService.releaseMonitor()
+    }
+
+    Process {
+        id: blurToggle
+        command: ["hyprctl", "eval",
+            "hl.config({ decoration = { blur = { enabled = "
+                + (root.blurOn ? "false" : "true") + " } } })"]
+        running: false
+        onRunningChanged: if (!running) root.blurOn = !root.blurOn
+    }
+    Process {
+        id: animToggle
+        command: ["hyprctl", "eval",
+            "hl.config({ animations = { enabled = "
+                + (root.animationsOn ? "false" : "true") + " } })"]
+        running: false
+        onRunningChanged: if (!running) root.animationsOn = !root.animationsOn
+    }
+    Column {
+        id: mainCol
+        width: parent.width
+        spacing: 8
+
+        // ── Row 1: Wifi | Bluetooth ─────────────────────────────────────
+        Column {
+            width: parent.width
+            spacing: 0
+
+            RowLayout {
+                width: parent.width; spacing: 8
+                WifiExpander      { id: wifiEx; Layout.fillWidth: true }
+                BluetoothExpander { id: btEx;   Layout.fillWidth: true }
+            }
+
+            // Full-width dropdown below both headers
+            Item {
+                width:  parent.width
+                height: (wifiEx.expanded || btEx.expanded) ? dropdownBox1.implicitHeight + 10 : 0
+                clip:   true
+                Behavior on height { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+
+                Rectangle {
+                    id: dropdownBox1
+                    anchors { top: parent.top; topMargin: 8; left: parent.left; right: parent.right }
+                    color: "#1e2030"; radius: 12; clip: true
+                    implicitHeight: dd1inner.implicitHeight + 8
+
+                    Column {
+                        id: dd1inner
+                        width: parent.width
+                        topPadding: 4; bottomPadding: 4; spacing: 0
+
+                        // Wifi network list
+                        Repeater {
+                            model: wifiEx.expanded ? wifiEx.networks : []
+                            delegate: NetRow {
+                                required property var modelData
+                                netObject: modelData.network
+                                netSsid:  modelData.ssid
+                                signal_:  modelData.signal
+                                secured:  modelData.secured
+                                isActive: modelData.active
+                                width:    dd1inner.width
+                                onConnectRequested: wifiEx.scan()
+                            }
+                        }
+
+                        // Bluetooth device list
+                        Text {
+                            visible: btEx.expanded && btEx.devices.length === 0
+                            width: parent.width; height: 36
+                            text: "No connected devices"
+                            leftPadding: 14
+                            font.family: "JetBrainsMono Nerd Font Propo"
+                            font.pixelSize: 12; color: "#444a73"
+                            verticalAlignment: Text.AlignVCenter
+                        }
+                        Repeater {
+                            model: btEx.expanded ? btEx.devices : []
+                            delegate: BtRow {
+                                required property var modelData
+                                btObject: modelData.device
+                                devMac:  modelData.mac
+                                devName: modelData.name
+                                devBat:  modelData.battery
+                                width:   dd1inner.width
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── Row 2: Power Mode | Night Light ─────────────────────────────
+        Column {
+            width: parent.width
+            spacing: 0
+
+            RowLayout {
+                width: parent.width; spacing: 8
+                PowerModeExpander { id: pmEx; Layout.fillWidth: true }
+                Toggle {
+                    Layout.fillWidth: true; implicitHeight: 48
+                    icon: ""; label: "Night Light"; active: Backend.NightLightService.active
+                    onClicked: Backend.NightLightService.toggle()
+                }
+            }
+
+            // Full-width power mode dropdown
+            Item {
+                width:  parent.width
+                height: pmEx.expanded ? dropdownBox2.implicitHeight + 10 : 0
+                clip:   true
+                Behavior on height { NumberAnimation { duration: 300; easing.type: Easing.OutCubic } }
+
+                Rectangle {
+                    id: dropdownBox2
+                    anchors { top: parent.top; topMargin: 8; left: parent.left; right: parent.right }
+                    color: "#1e2030"; radius: 12; clip: true
+                    implicitHeight: dd2inner.implicitHeight + 8
+
+                    Column {
+                        id: dd2inner
+                        width: parent.width
+                        topPadding: 4; bottomPadding: 4; spacing: 0
+
+                        Repeater {
+                            model: pmEx.profiles
+                            delegate: ProfRow {
+                                required property var modelData
+                                profId:    modelData.id
+                                profLabel: modelData.label
+                                profIcon:  modelData.icon
+                                isActive:  pmEx.activeProfile === modelData.id
+                                width:     dd2inner.width
+                                onSelected: pmEx.setProfile(modelData.id)
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // ── Row 3: DND | Airplane ────────────────────────────────────────
+        RowLayout {
+            width: parent.width; spacing: 8
+            Toggle {
+                Layout.fillWidth: true; implicitHeight: 48
+                icon: "󰍶"
+                label: "Do Not Disturb"; active: root.dndOn
+                onClicked: Backend.NotificationService.toggleDnd()
+            }
+            Toggle {
+                Layout.fillWidth: true; implicitHeight: 48
+                icon: "\uf072"; label: "Airplane Mode"; active: root.airplaneOn
+                onClicked: {
+                    var enable = !root.airplaneOn
+                    Backend.NetworkService.setAirplaneMode(enable)
+                    Backend.BluetoothService.setEnabled(!enable)
+                }
+            }
+        }
+
+        // ── Row 4: Blur | Animations ─────────────────────────────────────
+        RowLayout {
+            width: parent.width; spacing: 8
+            Toggle {
+                Layout.fillWidth: true; implicitHeight: 48
+                icon: "\udb80\udcb5"
+                label: "Blur"; active: root.blurOn
+                onClicked: blurToggle.running = true
+            }
+            Toggle {
+                Layout.fillWidth: true; implicitHeight: 48
+                icon: "󰗘"
+                label: "Animations"; active: root.animationsOn
+                onClicked: animToggle.running = true
+            }
+        }
+    }
+
+    // ── Shared dropdown row components ────────────────────────────────────
+
+    component NetRow: Item {
+        property var netObject: null
+        property string netSsid:  ""
+        property int    signal_:  0
+        property bool   secured:  false
+        property bool   isActive: false
+        signal connectRequested()
+        implicitHeight: 36
+        property bool hov: nh.containsMouse
+
+        Rectangle {
+            anchors { fill: parent; leftMargin: 4; rightMargin: 4 }
+            radius: 8
+            color: isActive ? "#2f334d" : "transparent"
+            Rectangle {
+                anchors.fill: parent; radius: parent.radius; color: "#222436"
+                opacity: (hov && !isActive) ? 1.0 : 0.0
+                Behavior on opacity { NumberAnimation { duration: 120 } }
+            }
+
+            Row {
+                anchors { fill: parent; leftMargin: 10; rightMargin: 10 }
+                spacing: 8
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "\uf1eb"
+                    font.family: "JetBrainsMono Nerd Font Propo"
+                    font.pixelSize: 12; font.weight: Font.ExtraBold
+                    color: isActive ? "#7cafff" : "#828bb8"
+                    opacity: signal_ >= 70 ? 1.0 : signal_ >= 40 ? 0.65 : 0.35
+                }
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: netSsid
+                    width: parent.width - 50
+                    font.family: "JetBrainsMono Nerd Font Propo"
+                    font.pixelSize: 12; font.weight: Font.Bold
+                    color: isActive ? "#7cafff" : "#828bb8"
+                    elide: Text.ElideRight
+                }
+            }
+        }
+
+        MouseArea {
+            id: nh; anchors.fill: parent; hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: if (!isActive) {
+                Backend.NetworkService.connect(netObject)
+                connectRequested()
+            }
+        }
+    }
+
+    component BtRow: Item {
+        property var btObject: null
+        property string devMac:  ""
+        property string devName: ""
+        property string devBat:  ""
+        implicitHeight: 36
+        property bool hov: bh.containsMouse
+
+        Rectangle {
+            anchors { fill: parent; leftMargin: 4; rightMargin: 4 }
+            radius: 8; color: "transparent"
+            Rectangle {
+                anchors.fill: parent; radius: parent.radius; color: "#222436"
+                opacity: hov ? 1.0 : 0.0
+                Behavior on opacity { NumberAnimation { duration: 120 } }
+            }
+            Row {
+                anchors { fill: parent; leftMargin: 10; rightMargin: 10 }
+                spacing: 8
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: "\uf293"
+                    font.family: "JetBrainsMono Nerd Font Propo"
+                    font.pixelSize: 13; font.weight: Font.ExtraBold; color: "#7cafff"
+                }
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: devName
+                    width: parent.width - (devBat !== "" ? 70 : 40)
+                    font.family: "JetBrainsMono Nerd Font Propo"
+                    font.pixelSize: 12; font.weight: Font.Bold
+                    color: "#828bb8"; elide: Text.ElideRight
+                }
+                Text {
+                    visible: devBat !== ""
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: devBat + "%"
+                    font.family: "JetBrainsMono Nerd Font Propo"
+                    font.pixelSize: 11; color: "#828bb8"
+                }
+            }
+        }
+
+        MouseArea {
+            id: bh; anchors.fill: parent; hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: Backend.BluetoothService.disconnect(btObject)
+        }
+    }
+
+    component ProfRow: Item {
+        property string profId:    ""
+        property string profLabel: ""
+        property string profIcon:  ""
+        property bool   isActive:  false
+        signal selected()
+        implicitHeight: 38
+        property bool hov: peh.containsMouse
+
+        Rectangle {
+            anchors { fill: parent; leftMargin: 4; rightMargin: 4 }
+            radius: 8
+            color: isActive ? "#2f334d" : "transparent"
+            Rectangle {
+                anchors.fill: parent; radius: parent.radius; color: "#222436"
+                opacity: (hov && !isActive) ? 1.0 : 0.0
+                Behavior on opacity { NumberAnimation { duration: 120 } }
+            }
+            Row {
+                anchors { fill: parent; leftMargin: 12; rightMargin: 12 }
+                spacing: 10
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: profIcon
+                    font.family: "JetBrainsMono Nerd Font Propo"
+                    font.pixelSize: 14; font.weight: Font.ExtraBold
+                    color: isActive ? "#7cafff" : "#828bb8"
+                }
+                Text {
+                    anchors.verticalCenter: parent.verticalCenter
+                    text: profLabel
+                    font.family: "JetBrainsMono Nerd Font Propo"
+                    font.pixelSize: 13; font.weight: Font.Bold
+                    color: isActive ? "#7cafff" : "#828bb8"
+                }
+            }
+        }
+
+        MouseArea {
+            id: peh; anchors.fill: parent; hoverEnabled: true
+            cursorShape: Qt.PointingHandCursor
+            onClicked: if (!isActive) parent.selected()
+        }
+    }
+}

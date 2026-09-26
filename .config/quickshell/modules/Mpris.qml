@@ -3,7 +3,7 @@
 // Left click: play/pause   Scroll: next/prev
 import QtQuick
 import QtQuick.Layouts
-import Quickshell.Io
+import "../services" as Backend
 
 BarItem {
     id: root
@@ -11,134 +11,21 @@ BarItem {
     // in the module width so short labels do not lose their final glyphs.
     implicitWidth: Math.min(mrow.implicitWidth + 26, maxWidth)
 
-    property string activePlayer: ""
-    property string artist:   ""
-    property string title:    ""
-    property string status:   "Stopped"   // Playing / Paused / Stopped
+    readonly property var player: Backend.MediaService.active
+    readonly property string activePlayer: Backend.MediaService.shortName(player)
+    readonly property string artist: player ? player.trackArtist : ""
+    readonly property string title: player ? (player.trackTitle || player.identity) : ""
+    readonly property string status: !player ? "Stopped" : player.isPlaying ? "Playing" : "Paused"
     property real   maxWidth: 100000
-    property bool   hasMedia: status !== "Stopped" && (artist !== "" || title !== "")
-    property bool   _sawMetadata: false
+    readonly property bool hasMedia: player !== null && (artist !== "" || title !== "")
 
     visible: hasMedia
-
-    Process {
-        id: metaProc
-        command: ["bash", "-c",
-            "fallback=''; " +
-            "for p in $(playerctl --list-all 2>/dev/null); do " +
-                "st=$(playerctl --player=\"$p\" status 2>/dev/null) || continue; " +
-                "artist=$(playerctl --player=\"$p\" metadata artist 2>/dev/null || true); " +
-                "title=$(playerctl --player=\"$p\" metadata title 2>/dev/null || true); " +
-                "row=$(printf '%s\\t%s\\t%s\\t%s' \"$p\" \"$st\" \"$artist\" \"$title\"); " +
-                "[ -z \"$fallback\" ] && fallback=\"$row\"; " +
-                "if [ \"$st\" = Playing ]; then printf '%s\\n' \"$row\"; exit 0; fi; " +
-            "done; " +
-            "[ -n \"$fallback\" ] && printf '%s\\n' \"$fallback\""]
-        running: false
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: function(line) {
-                var parts = line.split("\t")
-                root._sawMetadata = true
-                root.activePlayer = parts[0] ? parts[0].trim() : ""
-                root.status = parts[1] ? parts[1].trim() : "Stopped"
-                root.artist = parts[2] ? parts[2].trim() : ""
-                root.title  = parts[3] ? parts[3].trim() : ""
-            }
-        }
-        onRunningChanged: {
-            if (running) {
-                root._sawMetadata = false
-            } else if (!root._sawMetadata) {
-                root.activePlayer = ""
-                root.status = "Stopped"
-                root.artist = ""
-                root.title  = ""
-            }
-        }
-    }
-
-    Timer {
-        interval: 250
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: metaProc.running = true
-    }
-
-    Timer {
-        id: refreshTimer
-        interval: 120
-        onTriggered: if (!metaProc.running) metaProc.running = true
-    }
-
-    function playerCommand(action) {
-        return root.activePlayer !== ""
-            ? ["playerctl", "--player=" + root.activePlayer, action]
-            : ["playerctl", action]
-    }
-
-    Process {
-        id: playPause
-        command: root.playerCommand("play-pause")
-        running: false
-        onRunningChanged: if (!running) refreshTimer.restart()
-    }
-    Process {
-        id: nextTrack
-        command: root.playerCommand("next")
-        running: false
-        onRunningChanged: if (!running) refreshTimer.restart()
-    }
-    Process {
-        id: prevTrack
-        command: root.playerCommand("previous")
-        running: false
-        onRunningChanged: if (!running) refreshTimer.restart()
-    }
-    Process {
-        id: focusSource
-        command: ["bash", "-c", [
-            "player=\"$1\"",
-            "title=\"$2\"",
-            "artist=\"$3\"",
-            "base=${player%%.*}",
-            "case \"$base\" in",
-            "    firefox|librewolf|zen|chromium|chrome|brave|vivaldi|opera)",
-            "        class_re=\"$base\"",
-            "        ;;",
-            "    spotify)",
-            "        class_re=\"spotify\"",
-            "        ;;",
-            "    *)",
-            "        class_re=\"$base\"",
-            "        ;;",
-            "esac",
-            "addr=$(hyprctl clients -j 2>/dev/null | jq -r --arg class \"$class_re\" --arg title \"$title\" --arg artist \"$artist\" '",
-            "    def norm: ascii_downcase;",
-            "    [",
-            "        .[]",
-            "        | .score = (",
-            "            (if ((.class // \"\") | norm | contains($class | norm)) then 10 else 0 end) +",
-            "            (if (($title | length) > 0 and ((.title // \"\") | norm | contains($title | norm))) then 4 else 0 end) +",
-            "            (if (($artist | length) > 0 and ((.title // \"\") | norm | contains($artist | norm))) then 2 else 0 end)",
-            "        )",
-            "        | select(.score > 0)",
-            "    ]",
-            "    | sort_by(.score)",
-            "    | reverse",
-            "    | .[0].address // empty",
-            "')",
-            "[ -n \"$addr\" ] && hyprctl dispatch \"hl.dsp.focus({ window = 'address:$addr' })\""
-        ].join("\n"), "_", root.activePlayer, root.title, root.artist]
-        running: false
-    }
 
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
         cursorShape: Qt.PointingHandCursor
-        onClicked: focusSource.running = true
+        onClicked: Backend.ActionService.focusMediaSource(root.activePlayer, root.title, root.artist)
     }
 
     RowLayout {
@@ -155,21 +42,21 @@ BarItem {
         PlayerButton {
             icon: "\uf048"
             onClicked: {
-                prevTrack.running = true
+                Backend.MediaService.previous(root.player)
             }
         }
 
         PlayerButton {
             icon: root.status === "Playing" ? "\uf04c" : "\uf04b"
             onClicked: {
-                playPause.running = true
+                Backend.MediaService.toggle(root.player)
             }
         }
 
         PlayerButton {
             icon: "\uf051"
             onClicked: {
-                nextTrack.running = true
+                Backend.MediaService.next(root.player)
             }
         }
 
@@ -192,8 +79,8 @@ BarItem {
 
     WheelHandler {
         onWheel: function(w) {
-            if (w.angleDelta.y > 0) prevTrack.running = true
-            else                    nextTrack.running = true
+            if (w.angleDelta.y > 0) Backend.MediaService.previous(root.player)
+            else                    Backend.MediaService.next(root.player)
         }
     }
 

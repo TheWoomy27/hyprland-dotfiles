@@ -1,0 +1,5 @@
+module Moonlight.Services
+singleton MediaService 1.0 MediaService.qml
+singleton TelemetryService 1.0 TelemetryService.qml
+singleton CavaService 1.0 CavaService.qml
+singleton NotificationService 1.0 NotificationService.qml

@@ -2,7 +2,7 @@
 import QtQuick
 import QtQuick.Effects
 import QtQuick.Layouts
-import Quickshell.Io
+import "../services" as Backend
 
 Item {
     id: root
@@ -10,13 +10,14 @@ Item {
     implicitHeight: 166
     height: implicitHeight
 
-    property string playerName: ""
-    property string title:      "Unknown"
-    property string artist:     ""
-    property string artUrl:     ""
-    property string status:     "Stopped"
-    property int    position:   0
-    property int    length:     0
+    required property var player
+    readonly property string playerName: Backend.MediaService.shortName(player)
+    readonly property string title: player ? (player.trackTitle || "Unknown") : "Unknown"
+    readonly property string artist: player ? player.trackArtist : ""
+    readonly property string artUrl: player ? player.trackArtUrl : ""
+    readonly property string status: !player ? "Stopped" : player.isPlaying ? "Playing" : "Paused"
+    readonly property real length: player && player.lengthSupported ? player.length : 0
+    property real displayPosition: player && player.positionSupported ? player.position : 0
     property real   seekTarget: 0
     property bool   seekPending: false
 
@@ -24,8 +25,25 @@ Item {
     readonly property bool hasDuration: length > 0
     readonly property bool hasTimeline: hasDuration || status !== "Stopped"
     readonly property real progress: length > 0
-        ? Math.max(0.0, Math.min(1.0, position / length))
+        ? Math.max(0.0, Math.min(1.0, displayPosition / length))
         : 0.0
+
+    function syncPosition() {
+        if (!seekPending && player && player.positionSupported)
+            displayPosition = player.position
+    }
+
+    onPlayerChanged: syncPosition()
+
+    Connections {
+        target: root.player
+        function onPositionChanged() { root.syncPosition() }
+        function onTrackChanged() {
+            root.seekPending = false
+            root.syncPosition()
+        }
+        function onPlaybackStateChanged() { root.syncPosition() }
+    }
 
     // Local tick keeps the progress smooth without hammering playerctl.
     Timer {
@@ -33,49 +51,9 @@ Item {
         running:  root.isPlaying
         repeat:   true
         onTriggered: {
-            if (root.length <= 0 || root.position < root.length)
-                root.position += 1
+            if (root.length <= 0 || root.displayPosition < root.length)
+                root.displayPosition += 1
         }
-    }
-
-    Process {
-        id: metaProc
-        command: ["playerctl", "--player=" + root.playerName, "metadata",
-                  "--format", "{{title}}\t{{artist}}\t{{status}}\t{{mpris:artUrl}}\t{{position}}\t{{mpris:length}}"]
-        running: false
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: function(line) {
-                var p = line.split("\t")
-                var t = p[0] ? p[0].trim() : ""
-
-                root.title  = t !== "" ? t : "Unknown"
-                root.artist = p[1] ? p[1].trim() : ""
-                root.status = p[2] ? p[2].trim() : "Stopped"
-                root.artUrl = p[3] ? p[3].trim() : ""
-
-                var posRaw = p[4] ? parseInt(p[4]) : 0
-                var lenRaw = p[5] ? parseInt(p[5]) : 0
-                var pos    = posRaw > 0 ? Math.round(posRaw / 1000000) : 0
-                var len    = lenRaw > 0 ? Math.round(lenRaw / 1000000) : 0
-
-                root.length = len
-                if (!root.seekPending && (Math.abs(pos - root.position) > 2 || !root.isPlaying))
-                    root.position = pos
-            }
-        }
-        onRunningChanged: {
-            if (!running && root.title === "")
-                root.title = "Unknown"
-        }
-    }
-
-    Timer {
-        interval: 200
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: if (!metaProc.running) metaProc.running = true
     }
 
     Timer {
@@ -83,23 +61,9 @@ Item {
         interval: 1200
         onTriggered: {
             root.seekPending = false
-            if (!metaProc.running)
-                metaProc.running = true
+            root.syncPosition()
         }
     }
-
-    Process { id: shuffleP; command: ["playerctl", "--player=" + root.playerName, "shuffle", "Toggle"]; running: false
-              onRunningChanged: if (!running) metaProc.running = true }
-    Process { id: prevP;    command: ["playerctl", "--player=" + root.playerName, "previous"]; running: false
-              onRunningChanged: if (!running) metaProc.running = true }
-    Process { id: playP;    command: ["playerctl", "--player=" + root.playerName, "play-pause"]; running: false
-              onRunningChanged: if (!running) metaProc.running = true }
-    Process { id: nextP;    command: ["playerctl", "--player=" + root.playerName, "next"]; running: false
-              onRunningChanged: if (!running) metaProc.running = true }
-    Process { id: stopP;    command: ["playerctl", "--player=" + root.playerName, "stop"]; running: false
-              onRunningChanged: if (!running) metaProc.running = true }
-    Process { id: seekP;    command: ["playerctl", "--player=" + root.playerName, "position", Math.round(root.seekTarget).toString()]; running: false
-              onRunningChanged: if (!running) metaProc.running = true }
 
     function fmtTime(s) {
         s = Math.max(0, Math.floor(s))
@@ -133,10 +97,10 @@ Item {
         if (root.length <= 0) return
         norm = Math.max(0.0, Math.min(1.0, norm))
         root.seekTarget = Math.round(norm * root.length)
-        root.position = root.seekTarget
+        root.displayPosition = root.seekTarget
         root.seekPending = true
         seekHoldTimer.restart()
-        seekP.running = true
+        Backend.MediaService.seekTo(root.player, root.seekTarget)
     }
 
     Item {
@@ -387,13 +351,13 @@ Item {
             }
 
             Text {
-                visible: root.hasDuration || root.position > 0
+                visible: root.hasDuration || root.displayPosition > 0
                 anchors {
                     left: progressTrack.left
                     top: progressTrack.bottom
                     topMargin: 6
                 }
-                text: root.fmtTime(root.hasDuration ? progressArea.visualValue * root.length : root.position)
+                text: root.fmtTime(root.hasDuration ? progressArea.visualValue * root.length : root.displayPosition)
                 font.family: "JetBrainsMono Nerd Font Propo"
                 font.pixelSize: 10
                 font.weight: Font.ExtraBold
@@ -451,16 +415,20 @@ Item {
             }
             spacing: 15
 
-            MBtn { icon: "\uf074"; muted: true; onClicked: shuffleP.running = true }
-            MBtn { icon: "\uf049"; onClicked: prevP.running = true }
+            MBtn {
+                icon: "\uf074"
+                muted: !root.player || !root.player.shuffle
+                onClicked: Backend.MediaService.toggleShuffle(root.player)
+            }
+            MBtn { icon: "\uf049"; onClicked: Backend.MediaService.previous(root.player) }
             MBtn {
                 icon: root.isPlaying ? "\uf04c" : "\uf04b"
                 main: true
                 sz: root.isPlaying ? 16 : 18
-                onClicked: playP.running = true
+                onClicked: Backend.MediaService.toggle(root.player)
             }
-            MBtn { icon: "\uf050"; onClicked: nextP.running = true }
-            MBtn { icon: "\uf04d"; danger: true; onClicked: stopP.running = true }
+            MBtn { icon: "\uf050"; onClicked: Backend.MediaService.next(root.player) }
+            MBtn { icon: "\uf04d"; danger: true; onClicked: Backend.MediaService.stop(root.player) }
         }
     }
 

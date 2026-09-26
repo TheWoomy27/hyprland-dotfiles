@@ -3,7 +3,7 @@
 // Reveal: left→right (width grows).  Hide: right→left (width shrinks).
 // FPS: hardcoded 144 to match monitor refresh rate.
 import QtQuick
-import Quickshell.Io
+import "../services" as Backend
 
 Item {
     id: root
@@ -12,34 +12,9 @@ Item {
     readonly property int contentWidth: barCount * (barWidth + barSpacing) - barSpacing + 6
     readonly property int fullWidth: contentWidth + shadowGutter * 2
 
-    property bool audioPlaying: false
-    property bool shouldShow:   false
-
-    Process {
-        id: openCava
-        command: ["hyprctl", "dispatch", "hl.dsp.exec_cmd(\"[float on; size 1150 646;] kitty -e cava\")"]
-        running: false
-    }
-
-    // Linger 5s after audio stops before hiding
-    Timer {
-        id: lingerTimer
-        interval: 5000
-        onTriggered: root.shouldShow = false
-    }
-
-    onAudioPlayingChanged: {
-        if (audioPlaying) {
-            lingerTimer.stop()
-            shouldShow = true
-        } else {
-            lingerTimer.restart()
-        }
-    }
-
     // Animate width: 0 when hidden, fullWidth when shown
     implicitHeight: 42 + shadowGutter * 2
-    implicitWidth: shouldShow ? fullWidth : 0
+    implicitWidth: Backend.CavaService.shouldShow ? fullWidth : 0
 
     Behavior on implicitWidth {
         NumberAnimation { duration: 500; easing.type: Easing.InOutCubic }
@@ -49,16 +24,10 @@ Item {
     visible: implicitWidth > 0
     clip: true
 
-    readonly property int barCount:   24
+    readonly property int barCount:   Backend.CavaService.barCount
     readonly property int barWidth:    3
     readonly property int barSpacing:  2
-    readonly property int maxLevel:    7
-
-    property var levels: {
-        var a = []
-        for (var i = 0; i < barCount; i++) a.push(0)
-        return a
-    }
+    readonly property int maxLevel:   Backend.CavaService.maxLevel
 
     // The actual BarItem — fills the animated width
     BarItem {
@@ -68,30 +37,6 @@ Item {
             margins: root.shadowGutter
         }
         hoverable: false
-
-        Process {
-            id: cavaProc
-            command: ["bash", "-c", "cava -p \"$HOME/.config/quickshell/cava-bar.ini\""]
-            running: true
-            stdout: SplitParser {
-                splitMarker: "\n"
-                onRead: function(line) {
-                    var t = line.trim()
-                    if (!t) return
-                    if (t[t.length - 1] === ";") t = t.slice(0, -1)
-                    var parts = t.split(";")
-                    var nl = []
-                    var hasSignal = false
-                    for (var i = 0; i < root.barCount; i++) {
-                        var level = i < parts.length ? Math.min(parseInt(parts[i]) || 0, root.maxLevel) : 0
-                        if (level > 0) hasSignal = true
-                        nl.push(level)
-                    }
-                    root.levels = nl
-                    root.audioPlaying = hasSignal
-                }
-            }
-        }
 
         Canvas {
             id: canvas
@@ -104,7 +49,7 @@ Item {
                 var totalW = root.barCount * (root.barWidth + root.barSpacing) - root.barSpacing
                 var startX = 0
                 for (var i = 0; i < root.barCount; i++) {
-                    var lv   = root.levels[i]
+                    var lv   = Backend.CavaService.levels[i]
                     var barH = lv === 0 ? 2 : Math.max(2, (lv / root.maxLevel) * height)
                     var x    = startX + i * (root.barWidth + root.barSpacing)
                     var y    = height - barH
@@ -117,7 +62,7 @@ Item {
             }
 
             Connections {
-                target: root
+                target: Backend.CavaService
                 function onLevelsChanged() { canvas.requestPaint() }
             }
         }
@@ -127,6 +72,6 @@ Item {
         anchors.fill: parent
         acceptedButtons: Qt.RightButton
         cursorShape: Qt.PointingHandCursor
-        onClicked: openCava.running = true
+        onClicked: Backend.ActionService.openCava()
     }
 }

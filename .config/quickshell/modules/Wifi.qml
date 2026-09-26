@@ -2,7 +2,7 @@
 // Left click: (reserved)  Right click: kitty -e nmtui
 import QtQuick
 import QtQuick.Layouts
-import Quickshell.Io
+import "../services" as Backend
 
 BarItem {
     id: root
@@ -14,60 +14,16 @@ BarItem {
         NumberAnimation { duration: 200; easing.type: Easing.OutCubic }
     }
 
-    property string connType: "none"
-    property string ssid:     ""
-    property int    signal:   0
-
-    Process { id: rightProc; command: ["hyprctl", "dispatch", "hl.dsp.exec_cmd(\"[float; size 1150 646;] kitty -e env NEWT_COLORS='root=#c8d3f5,#222436;border=#131421,#1e2030;window=#c8d3f5,#1e2030;shadow=#222436,#222436;title=#c8d3f5,#222436;button=#c8d3f5,#1e2030;actbutton=#c8d3f5,#444a73;checkbox=black,#c8d3f5;actcheckbox=#c8d3f5,#444a73;entry=#c8d3f5,#1e2030;label=#c8d3f5,#1e2030;listbox=#c8d3f5,#1e2030;actlistbox=#7cafff,#1e2030;textbox=#c8d3f5,#1e2030;acttextbox=#c8d3f5,#131421;helpline=#131421,#1e2030;roottext=#131421,#1e2030;emptyscale=red,#c8d3f5;fullscale=green,#c8d3f5;disabled_entry=gray,#c8d3f5;compactbutton=#c8d3f5,#131421;actsellistbox=#d5def8,#444a73;sellistbox=black,#444a73' nmtui\")"]; running: false }
-
-    Process {
-        id: netProc
-        command: ["bash", "-c", [
-            "wifi=$(nmcli -t -f ACTIVE,SSID,SIGNAL dev wifi 2>/dev/null | grep '^yes' | head -1);",
-            "if [ -n \"$wifi\" ]; then echo \"wifi:$wifi\";",
-            "else",
-            "  eth=$(nmcli -t -f TYPE,STATE dev 2>/dev/null | grep '^ethernet:connected' | head -1);",
-            "  if [ -n \"$eth\" ]; then echo \"ethernet\"; else echo \"none\"; fi;",
-            "fi"
-        ].join(" ")]
-        running: false
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: function(line) {
-                line = line.trim()
-                if (line.startsWith("wifi:yes:")) {
-                    var rest  = line.slice(9)
-                    var colon = rest.lastIndexOf(":")
-                    root.ssid     = colon > 0 ? rest.slice(0, colon) : rest
-                    root.signal   = colon > 0 ? (parseInt(rest.slice(colon + 1)) || 0) : 0
-                    root.connType = "wifi"
-                } else if (line === "ethernet") {
-                    root.connType = "ethernet"
-                    root.ssid     = ""
-                    root.signal   = 0
-                } else {
-                    root.connType = "none"
-                    root.ssid     = ""
-                    root.signal   = 0
-                }
-            }
-        }
-    }
-
-    Timer {
-        interval: 10000
-        running: true
-        repeat: true
-        triggeredOnStart: true
-        onTriggered: netProc.running = true
-    }
+    readonly property string connType: Backend.NetworkService.connType
+    readonly property string ssid: Backend.NetworkService.ssid
+    readonly property int signal: Backend.NetworkService.signalPercent
 
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         cursorShape: Qt.PointingHandCursor
         onClicked: function(m) {
-            if (m.button === Qt.RightButton) rightProc.running = true
+            if (m.button === Qt.RightButton) Backend.ActionService.openNetworkTui()
         }
     }
 

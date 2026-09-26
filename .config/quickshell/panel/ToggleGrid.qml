@@ -2,7 +2,7 @@
 // Dropdowns escape the RowLayout and span full width below each header row.
 import QtQuick
 import QtQuick.Layouts
-import Quickshell.Io
+import "../services" as Backend
 
 Item {
     id: root
@@ -10,68 +10,44 @@ Item {
     implicitHeight: mainCol.implicitHeight
 
     property bool panelOpen: true
+    property bool nightLightClaimed: false
     onPanelOpenChanged: {
         if (!panelOpen) {
             wifiEx.expanded  = false
             btEx.expanded    = false
             pmEx.expanded    = false
         }
+        reconcileNightLightClaim()
+        if (panelOpen)
+            Backend.CompositorService.refresh()
     }
 
-    property bool   dndOn:          false
-    property bool   airplaneOn:     false
-    property bool   caffeineOn:     false
-    property bool   blurOn:         true
-    property bool   animationsOn:   true
-    property string inhibitPid:     ""
+    readonly property bool dndOn: Backend.NotificationService.dnd
+    readonly property bool airplaneOn: !Backend.NetworkService.wifiEnabled
+                                         && (!Backend.BluetoothService.available
+                                             || !Backend.BluetoothService.enabled)
+    readonly property bool blurOn: Backend.CompositorService.blurEnabled
+    readonly property bool animationsOn: Backend.CompositorService.animationsEnabled
 
-    NightLightSync { id: nightLight }
-    Process {
-        id: dndToggle; command: ["swaync-client", "--toggle-dnd"]; running: false
-        onRunningChanged: if (!running) dndRead.running = true
-    }
-    Process {
-        id: dndRead; command: ["swaync-client", "--get-dnd"]; running: false
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: function(l) { root.dndOn = l.trim() === "true" }
+    function reconcileNightLightClaim() {
+        if (panelOpen && !nightLightClaimed) {
+            Backend.NightLightService.acquireMonitor()
+            nightLightClaimed = true
+        } else if (!panelOpen && nightLightClaimed) {
+            Backend.NightLightService.releaseMonitor()
+            nightLightClaimed = false
         }
     }
-    Process { id: apOn;  command: ["bash", "-c", "nmcli radio wifi off && bluetoothctl power off"]; running: false }
-    Process { id: apOff; command: ["bash", "-c", "nmcli radio wifi on  && bluetoothctl power on"];  running: false }
-    Process {
-        id: blurToggle
-        command: ["hyprctl", "eval",
-            "hl.config({ decoration = { blur = { enabled = "
-                + (root.blurOn ? "false" : "true") + " } } })"]
-        running: false
-        onRunningChanged: if (!running) root.blurOn = !root.blurOn
-    }
-    Process {
-        id: animToggle
-        command: ["hyprctl", "eval",
-            "hl.config({ animations = { enabled = "
-                + (root.animationsOn ? "false" : "true") + " } })"]
-        running: false
-        onRunningChanged: if (!running) root.animationsOn = !root.animationsOn
-    }
-    Process {
-        id: cafOn
-        command: ["bash", "-c",
-            "systemd-inhibit --what=idle --who=Caffeine --why=UserRequest --mode=block sleep infinity & echo $!"]
-        running: false
-        stdout: SplitParser {
-            splitMarker: "\n"
-            onRead: function(l) { root.inhibitPid = l.trim(); root.caffeineOn = root.inhibitPid !== "" }
-        }
-    }
-    Process {
-        id: cafOff; command: ["bash", "-c", "kill " + root.inhibitPid]; running: false
-        onRunningChanged: if (!running) { root.caffeineOn = false; root.inhibitPid = "" }
-    }
 
-    Timer { interval: 5000; running: true; repeat: true; triggeredOnStart: true
-            onTriggered: dndRead.running = true }
+    Component.onCompleted: {
+        reconcileNightLightClaim()
+        if (panelOpen)
+            Backend.CompositorService.refresh()
+    }
+    Component.onDestruction: {
+        if (nightLightClaimed)
+            Backend.NightLightService.releaseMonitor()
+    }
 
     Column {
         id: mainCol
@@ -112,6 +88,7 @@ Item {
                             model: wifiEx.expanded ? wifiEx.networks : []
                             delegate: NetRow {
                                 required property var modelData
+                                netObject: modelData.network
                                 netSsid:  modelData.ssid
                                 signal_:  modelData.signal
                                 secured:  modelData.secured
@@ -135,6 +112,7 @@ Item {
                             model: btEx.expanded ? btEx.devices : []
                             delegate: BtRow {
                                 required property var modelData
+                                btObject: modelData.device
                                 devMac:  modelData.mac
                                 devName: modelData.name
                                 devBat:  modelData.battery
@@ -156,8 +134,8 @@ Item {
                 PowerModeExpander { id: pmEx; Layout.fillWidth: true }
                 Toggle {
                     Layout.fillWidth: true; implicitHeight: 48
-                    icon: ""; label: "Night Light"; active: nightLight.active
-                    onClicked: nightLight.toggle()
+                    icon: ""; label: "Night Light"; active: Backend.NightLightService.active
+                    onClicked: Backend.NightLightService.toggle()
                 }
             }
 
@@ -203,14 +181,15 @@ Item {
                 Layout.fillWidth: true; implicitHeight: 48
                 icon: "󰍶"
                 label: "Do Not Disturb"; active: root.dndOn
-                onClicked: dndToggle.running = true
+                onClicked: Backend.NotificationService.toggleDnd()
             }
             Toggle {
                 Layout.fillWidth: true; implicitHeight: 48
                 icon: "\uf072"; label: "Airplane Mode"; active: root.airplaneOn
                 onClicked: {
-                    root.airplaneOn = !root.airplaneOn
-                    if (root.airplaneOn) apOn.running = true; else apOff.running = true
+                    var enable = !root.airplaneOn
+                    Backend.NetworkService.setAirplaneMode(enable)
+                    Backend.BluetoothService.setEnabled(!enable)
                 }
             }
         }
@@ -222,13 +201,13 @@ Item {
                 Layout.fillWidth: true; implicitHeight: 48
                 icon: "\udb80\udcb5"
                 label: "Blur"; active: root.blurOn
-                onClicked: blurToggle.running = true
+                onClicked: Backend.CompositorService.toggleBlur()
             }
             Toggle {
                 Layout.fillWidth: true; implicitHeight: 48
                 icon: "󰗘"
                 label: "Animations"; active: root.animationsOn
-                onClicked: animToggle.running = true
+                onClicked: Backend.CompositorService.toggleAnimations()
             }
         }
     }
@@ -236,6 +215,7 @@ Item {
     // ── Shared dropdown row components ────────────────────────────────────
 
     component NetRow: Item {
+        property var netObject: null
         property string netSsid:  ""
         property int    signal_:  0
         property bool   secured:  false
@@ -277,17 +257,18 @@ Item {
             }
         }
 
-        Process { id: connProc; command: ["nmcli","device","wifi","connect",netSsid]; running: false
-                  onRunningChanged: if (!running) connectRequested() }
-
         MouseArea {
             id: nh; anchors.fill: parent; hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
-            onClicked: if (!isActive) connProc.running = true
+            onClicked: if (!isActive) {
+                Backend.NetworkService.connect(netObject)
+                connectRequested()
+            }
         }
     }
 
     component BtRow: Item {
+        property var btObject: null
         property string devMac:  ""
         property string devName: ""
         property string devBat:  ""
@@ -329,11 +310,10 @@ Item {
             }
         }
 
-        Process { id: disconnProc; command: ["bluetoothctl","disconnect",devMac]; running: false }
         MouseArea {
             id: bh; anchors.fill: parent; hoverEnabled: true
             cursorShape: Qt.PointingHandCursor
-            onClicked: disconnProc.running = true
+            onClicked: Backend.BluetoothService.disconnect(btObject)
         }
     }
 

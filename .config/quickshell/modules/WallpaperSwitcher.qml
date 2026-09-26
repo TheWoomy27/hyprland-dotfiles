@@ -2,34 +2,20 @@
 // Left click: pick a random wallpaper from Moonlight
 // Right click: launch waypaper
 import QtQuick
-import Quickshell.Io
+import "../services" as Backend
 
 BarItem {
     id: root
     implicitWidth: 42
     hoverable: true
 
-    Process {
-        id: switchProc
-        command: ["bash", "-lc",
-            "f=$(find \"$HOME/Pictures/Wallpapers/Moonlight\" -type f | shuf -n 1); " +
-            "[ -n \"$f\" ] && awww img \"$f\" --transition-type any --transition-fps 144 --transition-duration 1.5"]
-        running: false
-    }
-
-    Process {
-        id: waypaperProc
-        command: ["waypaper"]
-        running: false
-    }
-
     MouseArea {
         anchors.fill: parent
         acceptedButtons: Qt.LeftButton | Qt.RightButton
         cursorShape: Qt.PointingHandCursor
         onClicked: function(m) {
-            if (m.button === Qt.LeftButton) switchProc.running = true
-            else                            waypaperProc.running = true
+            if (m.button === Qt.LeftButton) Backend.ActionService.randomWallpaper()
+            else                            Backend.ActionService.openWaypaper()
         }
     }
 
