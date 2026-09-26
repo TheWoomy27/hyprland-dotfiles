@@ -8,6 +8,21 @@ require("modules.monitors")
 require("modules.permissions")
 require("modules.plugins")
 require("modules.window-rules")
-require("modules.laptop")
 require("hyprland-gui")
 
+-- Load laptop-specific settings only on systems with an internal eDP-1 panel.
+local connector_check = io.popen(
+    'for connector in /sys/class/drm/card*-eDP-1; do '
+        .. '[ -e "$connector" ] && printf yes && break; '
+    .. 'done'
+)
+local has_internal_panel = connector_check and connector_check:read("*a") == "yes"
+if connector_check then
+    connector_check:close()
+end
+
+if has_internal_panel then
+    require("modules.laptop")
+else
+    require("modules.desktop")
+end

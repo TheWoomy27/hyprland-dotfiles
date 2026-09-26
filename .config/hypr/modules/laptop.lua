@@ -17,10 +17,6 @@ hl.window_rule({
     workspace = 4,
 })
 
--- hl.bind("switch:on:Lid Switch", hl.dsp.exec_cmd("hyprlock && systemctl suspend"), {
---     locked = true,
--- })
-
 hl.monitor({
     output = "eDP-1",
     mode = "preferred",
