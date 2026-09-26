@@ -26,3 +26,5 @@ if has_internal_panel then
 else
     require("modules.desktop")
 end
+
+dofile(os.getenv('HOME') .. '/Projects/Liquid Glass Shell/Output/hypr/glass.lua')

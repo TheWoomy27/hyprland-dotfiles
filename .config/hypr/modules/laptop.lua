@@ -1,7 +1,11 @@
 hl.env("QT_SCALE_FACTOR", "1")
 hl.env("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
+<<<<<<< HEAD
 hl.env("GDK_SCALE", "2")
 hl.env("AQ_DRM_DEVICES", "/dev/dri/intel-igpu")
+=======
+hl.env("GDK_SCALE", "1")
+>>>>>>> 5a12926 (Dotfiles Sync)
 
 hl.window_rule({
     match = {
