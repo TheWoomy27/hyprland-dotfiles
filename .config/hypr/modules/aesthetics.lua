@@ -37,6 +37,14 @@ hl.config({
             brightness = 0.9,
             vibrancy = 1,
             new_optimizations = true,
+            variant = "kawase",
+        },
+        wobble = {
+            enabled = true,
+        },
+        motion_blur = {
+            enabled = false,
+            samples = 7,
         },
     },
     animations = {

@@ -47,7 +47,6 @@ hl.bind(var_mainMod .. " + R", hl.dsp.exec_cmd("pidof " .. var_menu .. " || " ..
 hl.bind(var_mainMod .. " + W", hl.dsp.exec_cmd("pidof waypaper || waypaper"))
 
 -- Kill and reload apps
-hl.bind(var_mainMod .. " + SHIFT + B", hl.dsp.exec_cmd("~/.config/waybar/scripts/launch.sh"))
 hl.bind(var_mainMod .. " + SHIFT + Q", hl.dsp.exec_cmd("~/.config/quickshell/scripts/launch.sh"))
 hl.bind(var_mainMod .. " + SHIFT + O", hl.dsp.exec_cmd("killall -9 openrgb && openrgb"))
 local function adjust_zoom(factor)

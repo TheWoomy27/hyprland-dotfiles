@@ -24,7 +24,7 @@ alias vencord='sh -c "$(curl -sS https://vencord.dev/install.sh)"'
 
 set -gx PATH $PATH ~/.npm-global/bin   
 set -gx OPENCLAW_WS_DELTA_THROTTLE_MS 20
-
+set -gx ACOUSTID_KEY "HRywPJc8Rb"
 
 # OpenClaw Completion
 # source "/home/austin/.openclaw/completions/openclaw.fish"
