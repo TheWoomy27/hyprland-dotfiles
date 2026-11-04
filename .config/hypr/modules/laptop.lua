@@ -1,7 +1,7 @@
 hl.env("QT_SCALE_FACTOR", "1")
 hl.env("QT_AUTO_SCREEN_SCALE_FACTOR", "1")
-hl.env("AQ_DRM_DEVICES", "/dev/dri/intel-igpu")
 hl.env("GDK_SCALE", "2")
+hl.env("AQ_DRM_DEVICES", "/dev/dri/intel-igpu")
 
 hl.window_rule({
     match = {
@@ -75,3 +75,7 @@ for workspace = 21, 29 do
         monitor = "HDMI-A-2",
     })
 end
+
+wobble = {
+    enabled = false,
+}

@@ -46,6 +46,9 @@ hl.config({
             enabled = false,
             samples = 7,
         },
+        wobble = {
+            enabled = true,
+        },
     },
     animations = {
         enabled = true,
